@@ -34,7 +34,7 @@ export default function RegLogModal() {
     const handleLogout = async () => {
         setDropdownOpen(false);
         if (confirm("Are you sure you want to logout?")) {
-            await signOut({ callbackUrl: "/map-of-snacks" });
+            await signOut({ callbackUrl: "/" });
         }
     };
 

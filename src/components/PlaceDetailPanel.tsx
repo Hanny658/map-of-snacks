@@ -105,7 +105,7 @@ export default function PlaceDetailPanel({
         transform translate-y-0
         transition-transform duration-300 ease-out
 
-        sm:inset-auto sm:top-32 sm:right-4 sm:bottom-auto
+        sm:inset-auto sm:top-24 sm:right-8 sm:bottom-auto
         sm:translate-x-0 sm:w-1/4 sm:max-h-[60vh] sm:rounded-lg
         ">
             {/* Header with title and close button */}

@@ -93,7 +93,7 @@ export default function SearchBar({ onSelectPlace }: SearchBarProps) {
       bottom-12
       w-11/12
       z-20
-      sm:absolute sm:top-20 sm:right-4 sm:left-auto sm:translate-x-0 sm:transform-none sm:bottom-auto sm:w-1/4
+      sm:absolute sm:top-8 sm:right-8 sm:left-auto sm:translate-x-0 sm:transform-none sm:bottom-auto sm:w-1/4
       transition-all duration-300
     `}>
       {/* Search input */}
