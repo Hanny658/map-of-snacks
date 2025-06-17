@@ -137,3 +137,6 @@ dist
 
 # miscellous
 .vscode/
+
+# Uploads in public
+public/uploads
