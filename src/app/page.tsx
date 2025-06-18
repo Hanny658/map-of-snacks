@@ -77,7 +77,6 @@ export default function MapOfSnacksPage() {
   )
 }
 
-
 /**
  * MapContainer component: renders Mapbox GL map with clustering markers.
  * Props:
@@ -109,7 +108,7 @@ function MapContainer({
         container: mapContainer.current!,
         style: 'mapbox://styles/mapbox/streets-v11',
         center,
-        zoom: 12,
+        zoom: 13,
       });
       mapRef.current = map;
 
@@ -128,8 +127,8 @@ function MapContainer({
           })),
         },
         cluster: true,
-        clusterRadius: 30,
-        clusterMaxZoom: 12,
+        clusterRadius: 15,
+        clusterMaxZoom: 15,
       });
 
         // (2) Clustered circles
@@ -170,8 +169,8 @@ function MapContainer({
             'circle-radius': [
               'case',
               ['==', ['get', 'id'], selectedPlaceId],
-              12,
-              8,
+              15,
+              10,
             ],
             'circle-stroke-width': 2,
             'circle-stroke-color': '#ffffff',
@@ -298,7 +297,7 @@ function MapContainer({
 
     map.easeTo({
       center: [place.lng, place.lat],
-      zoom: 15,
+      zoom: 17,
       duration: 1000,
     })
 
@@ -306,8 +305,8 @@ function MapContainer({
     map.setPaintProperty('unclustered-point', 'circle-radius', [
       'case',
       ['==', ['get', 'id'], selectedPlaceId],
-      12,
-      8,
+      15,
+      10,
     ])
     // Update label size
     map.setLayoutProperty('place-labels', 'text-size', [
