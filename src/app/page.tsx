@@ -127,7 +127,7 @@ function MapContainer({
           })),
         },
         cluster: true,
-        clusterRadius: 15,
+        clusterRadius: 25,
         clusterMaxZoom: 15,
       });
 
