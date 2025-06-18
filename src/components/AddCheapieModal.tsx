@@ -41,9 +41,11 @@ export default function AddCheapieModal({ placeId, onClose, onCreated }: AddChea
     const [stock, setStock] = useState<Stock>('low')
     const [loading, setLoading] = useState(false)
     const [isCameraOpen, setCameraOpen] = useState(false)
+    const [isUploading, setIsUploading] = useState(false)
 
     // upload image to /api/upload and capture URL
     const handleImageChange = async (file: File) => {
+        setIsUploading(true)
         const form = new FormData()
         form.append('file', file)
         const res = await fetch('/api/upload', { method: 'POST', body: form })
@@ -54,6 +56,7 @@ export default function AddCheapieModal({ placeId, onClose, onCreated }: AddChea
             const err = await res.json()
             alert('Upload failed: ' + err.error)
         }
+        setIsUploading(false)
     }
 
     // submit new Cheapie
@@ -158,14 +161,25 @@ export default function AddCheapieModal({ placeId, onClose, onCreated }: AddChea
                             onClick={() => setCameraOpen(true)}
                         ></i>
                         </div>
-                        {imageUrl && (
+                        <div className="mb-2">
+                        {isUploading ? (
+                            <div className="flex flex-col items-center text-gray-500">
+                            <div className="animate-spin h-8 w-8" />
+                            <span>Working hard to upload your capture…</span>
+                            </div>
+                        ) : imageUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={imageUrl} alt='Oops, something might be wrong..' className="max-h-40 rounded" />
+                        ) : null}
+                        </div>
+                        {/* {imageUrl && (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
                             src={imageUrl}
                             alt="preview"
                             className="mt-2 w-24 h-24 object-cover rounded"
                         />
-                        )}
+                        )} */}
                         {isCameraOpen && (
                         <PhotoCapture
                             size={300}

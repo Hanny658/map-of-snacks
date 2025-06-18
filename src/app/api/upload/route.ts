@@ -17,7 +17,7 @@ export const runtime = 'nodejs'
 /**
  * POST /api/upload
  *
- * - Limit：if file buffer is greater than 5M, return 413
+ * - Limit：if file buffer is greater than 10M, return 413
  * - if final file sized > 1MB, use sharp to compress it to JPEG(quality: 80)
  * - write it to public/uploads/{timestamp}-{rand}.{ext}, then give back { url }
  */
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
         const imported = await import('busboy')
         BusboyFactory = (imported as any).default || (imported as any).Busboy || imported
     } catch (err) {
-        console.error('[API][Upload] Cannot import busboy：', err)
+        console.error('[API][Upload] Cannot import busboy: ', err)
         return NextResponse.json(
             { error: 'Internal Server Error: failed to load file handling system.' },
             { status: 500 }
@@ -56,8 +56,8 @@ export async function POST(request: NextRequest) {
 
                     fileStream.on('data', (chunk: Buffer) => {
                         fileBuffer = Buffer.concat([fileBuffer, chunk])
-                        if (fileBuffer.length > 5 * 1024 * 1024) {
-                            // > 5MB, mark as too big. Tag it 
+                        if (fileBuffer.length > 10 * 1024 * 1024) {
+                            // > 10MB, mark as too big. Tag it 
                             fileTooLarge = true
                             fileStream.resume()
                         }
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
                 if (fileTooLarge) {
                     return resolve(
                         NextResponse.json(
-                            { error: '文件过大，最大支持 5 MB' },
+                            { error: 'File is too big, Maximum 10 MB' },
                             { status: 413 }
                         )
                     )
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
                 if (!originalFilename) {
                     return resolve(
                         NextResponse.json(
-                            { error: '未检测到 “file” 上传字段' },
+                            { error: 'File not found in the upload request PAYLOAD' },
                             { status: 400 }
                         )
                     )
@@ -112,10 +112,10 @@ export async function POST(request: NextRequest) {
                     const publicUrl = `/uploads/${filename}`
                     return resolve(NextResponse.json({ url: publicUrl }))
                 } catch (err) {
-                    console.error('[API][Upload] 写入或压缩失败：', err)
+                    console.error('[API][Upload] Write/Compress Error: ', err)
                     return resolve(
                         NextResponse.json(
-                            { error: '保存文件失败' },
+                            { error: 'File failed to be saved.' },
                             { status: 500 }
                         )
                     )
@@ -128,10 +128,10 @@ export async function POST(request: NextRequest) {
             const bufferStream = Readable.from(buffer)
             bufferStream.pipe(busboy)
         } catch (err) {
-            console.error('[API][Upload] 解析请求失败：', err)
+            console.error('[API][Upload] Request handling Error: ', err)
             return resolve(
                 NextResponse.json(
-                    { error: '解析文件失败' },
+                    { error: 'Cannot process file' },
                     { status: 500 }
                 )
             )

@@ -79,9 +79,9 @@ export default function PhotoCapture({ size, onCapture, onCancel }: PhotoCapture
 
         canvas.toBlob((blob) => {
             if (!blob) return;
-            const file = new File([blob], 'capture.png', { type: 'image/png' });
+            const file = new File([blob], 'capture.jpg', { type: 'image/jpeg' });
             onCapture(file);
-        }, 'image/png');
+        }, 'image/jpeg', 0.8);
     };
 
     return (
