@@ -164,8 +164,8 @@ export default function AddCheapieModal({ placeId, onClose, onCreated }: AddChea
                         <div className="mb-2">
                         {isUploading ? (
                             <div className="flex flex-col items-center text-gray-500">
-                            <div className="animate-spin h-8 w-8" />
                             <span>Working hard to upload your capture…</span>
+                            <button className='bg-red-600/75 text-white text-sm p-1 inline-flex' onClick={()=>{setIsUploading(false)}}>Cancel</button>
                             </div>
                         ) : imageUrl ? (
                             // eslint-disable-next-line @next/next/no-img-element
@@ -218,9 +218,9 @@ export default function AddCheapieModal({ placeId, onClose, onCreated }: AddChea
                     <button
                         onClick={handleSubmit}
                         className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-                        disabled={loading}
+                        disabled={loading || isUploading}
                     >
-                        {loading ? 'Adding...' : 'Submit'}
+                        {loading ? 'Adding...' : isUploading? "Uploading in progress.." : 'Submit'}
                     </button>
                 </div>
             </div>
