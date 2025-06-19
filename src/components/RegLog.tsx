@@ -7,12 +7,14 @@ import { signIn, signOut, useSession } from "next-auth/react";
 export default function RegLogModal() {
     const { data: session } = useSession();
     const [isOpen, setIsOpen] = useState(false);
-    const [mode, /*setMode*/] = useState<"login" | "register">("login");
+    const [mode, setMode] = useState<"login" | "register">("login");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [username, setUsername] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [dropdownOpen, setDropdownOpen] = useState(false);
+
+    const [showPwd, setShowPwd] = useState(false);
 
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -97,19 +99,27 @@ export default function RegLogModal() {
                                 type="email"
                                 required
                                 value={email}
+                                maxLength={255}
                                 onChange={(e) => setEmail(e.target.value)}
                                 className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
-                        <div>
+                        <div className="relative">
                             <label className="block text-sm mb-1">Password</label>
                             <input
-                                type="password"
+                                type={showPwd ? "text" : "password"}
                                 required
                                 value={password}
+                                minLength={6}
+                                maxLength={255}
                                 onChange={(e) => setPassword(e.target.value)}
                                 className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
+                            {mode === "register" && <div className="w-full text-sm text-gray-500 text-right">Please set you password longer than 6 charactors~</div> }
+                            <div className="absolute z-50 top-8 right-3">
+                                <i className={`bi ${showPwd ? 'bi-eye-slash' : 'bi-eye'} text-lg text-cyan-700/80`} 
+                                onClick={() => { setShowPwd(!showPwd); }}></i>
+                            </div>
                         </div>
 
                         {mode === "register" && (
@@ -119,9 +129,11 @@ export default function RegLogModal() {
                                     type="text"
                                     required
                                     value={username}
+                                    maxLength={32}
                                     onChange={(e) => setUsername(e.target.value)}
                                     className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
+                                <div className="w-full text-sm text-gray-500 text-right">Choose your favorite nickname in 32 charactors~</div>
                             </div>
                         )}
 
@@ -137,7 +149,7 @@ export default function RegLogModal() {
 
                     <p className="mt-4 text-center text-sm">
                         <b className="text-gray-500">Register will be available after Close Beta</b>
-                        {/* {mode === "login"
+                        {mode === "login"
                             ? "Don't have an account?"
                             : "Already have an account?"}{" "}
                         <button
@@ -145,7 +157,7 @@ export default function RegLogModal() {
                             className="text-blue-600 hover:underline"
                         >
                             {mode === "login" ? "Register" : "Login"}
-                        </button> */}
+                        </button>
                     </p>
                 </div>
             </div>
