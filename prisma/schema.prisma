@@ -26,7 +26,7 @@ datasource db {
 model User {
   id        String   @id @default(uuid())
   email     String   @unique            // make sure email can be used for login
-  name  String
+  name      String
   password  String
   createdAt DateTime @default(now())
 }

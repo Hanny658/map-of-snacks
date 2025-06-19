@@ -4,18 +4,8 @@
 import React, { useEffect, useState } from 'react'
 import MarkGoneButton from './MarkGoneButton'
 import { useSession } from "next-auth/react";
-
-interface Cheapie {
-    id: number
-    name: string
-    quantity: number
-    price: number
-    exp?: string
-    addBy?: string
-    image?: string
-    stock: 'plenty' | 'mid' | 'low' | 'gone'
-    createdAt: string
-}
+import CheapieDetailModal from './CheapieDetailModal';
+import type { Cheapie } from '@/types/cheapie';
 
 interface PlaceDetailPanelProps {
     placeName: string
@@ -79,6 +69,7 @@ export default function PlaceDetailPanel({
     onAdd,
 }: PlaceDetailPanelProps) {
     const [cheapies, setCheapies] = useState<Cheapie[]>([])
+    const [selectedCheapie, setSelectedCheapie] = useState<Cheapie | null>(null)
     const { data: session } = useSession();
 
     // fetch cheapies for this place
@@ -123,7 +114,7 @@ export default function PlaceDetailPanel({
             {/* Cheapie list */}
             <div className="flex-1 overflow-auto px-3 py-2 space-y-3">
                 {cheapies.map((c) => (
-                    <div key={c.id} className="flex flex-col bg-blue-50 rounded-lg p-2">
+                    <div key={c.id} className="flex flex-col bg-blue-50 rounded-lg p-2 cursor-pointer" onClick={() => setSelectedCheapie(c)}>
                         <div className="flex">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
@@ -192,6 +183,22 @@ export default function PlaceDetailPanel({
                 }
                 <br className='md:hidden' />
             </div>
+
+            {selectedCheapie && (
+            <CheapieDetailModal
+                cheapie={selectedCheapie}
+                isAuthenticated={session!==null}
+                onClose={() => setSelectedCheapie(null)}
+                onMarkedGone={(id) => {
+                // update local list immediately:
+                setCheapies((prev) =>
+                    prev.map((x) =>
+                    x.id === id ? { ...x, stock: 'gone' } : x
+                    )
+                )
+                }}
+            />
+            )}
         </div>
     )
 }

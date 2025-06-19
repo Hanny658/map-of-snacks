@@ -132,7 +132,7 @@ export default function DetailModal({
                     }}
                     className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
                 >
-                    ×
+                    <i className="bi bi-x-lg"></i>
                 </button>
 
                 {!isEditing ? (
