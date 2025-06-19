@@ -11,6 +11,7 @@ interface Cheapie {
     quantity: number
     price: number
     exp?: string
+    addBy?: string
     image?: string
     stock: 'plenty' | 'mid' | 'low' | 'gone'
     createdAt: string
@@ -155,7 +156,7 @@ export default function PlaceDetailPanel({
                         {/* New row: time ago + stock badge */}
                         <div className="mt-2 flex justify-between items-center">
                             <span className="text-gray-500 text-xs">
-                                added {timeAgo(c.createdAt)}
+                                added {c.addBy && `by ${c.addBy}`} {timeAgo(c.createdAt)}
                             </span>
                             <span
                                 className={`px-2 py-0.5 rounded text-xs font-medium ${stockColorMap[c.stock]}`}

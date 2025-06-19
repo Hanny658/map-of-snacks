@@ -43,6 +43,7 @@ export const CMSConfig: Record<string, FieldDef[]> = {
         { name: 'quantity', type: 'int', label: 'Quantity' },
         { name: 'price', type: 'float', label: 'Price' },
         { name: 'exp', type: 'datetime', label: 'Expiration Date', isOptional: true },
+        { name: 'addBy', type: 'string', label: 'Add By', isReadOnly: true },
         {
             name: 'image',
             type: 'image-url',

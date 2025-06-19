@@ -3,6 +3,7 @@
 
 import React, { useState } from 'react'
 import PhotoCapture from './PhotoCapture'
+import { useSession } from 'next-auth/react'
 
 interface AddCheapieModalProps {
     placeId: string
@@ -42,6 +43,8 @@ export default function AddCheapieModal({ placeId, onClose, onCreated }: AddChea
     const [loading, setLoading] = useState(false)
     const [isCameraOpen, setCameraOpen] = useState(false)
     const [isUploading, setIsUploading] = useState(false)
+    // Load logged-in user data
+    const { data: session } = useSession();
 
     // upload image to /api/upload and capture URL
     const handleImageChange = async (file: File) => {
@@ -74,6 +77,7 @@ export default function AddCheapieModal({ placeId, onClose, onCreated }: AddChea
                 quantity: Number(quantity),
                 price: Number(price),
                 stock,
+                addBy: session?.user.name || "Unknown User",
             }
             if (exp) payload.exp = new Date(exp)
             if (imageUrl) payload.image = imageUrl

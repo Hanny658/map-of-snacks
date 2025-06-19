@@ -45,6 +45,7 @@ model Cheapie {
   store     String
   quantity  Int
   price     Float
+  addBy     String    @default("System")
   exp       DateTime?
   image     String?
   stock     Stock     @default(low)

@@ -3220,6 +3220,7 @@ export namespace Prisma {
     store: string | null
     quantity: number | null
     price: number | null
+    addBy: string | null
     exp: Date | null
     image: string | null
     stock: $Enums.Stock | null
@@ -3232,6 +3233,7 @@ export namespace Prisma {
     store: string | null
     quantity: number | null
     price: number | null
+    addBy: string | null
     exp: Date | null
     image: string | null
     stock: $Enums.Stock | null
@@ -3244,6 +3246,7 @@ export namespace Prisma {
     store: number
     quantity: number
     price: number
+    addBy: number
     exp: number
     image: number
     stock: number
@@ -3270,6 +3273,7 @@ export namespace Prisma {
     store?: true
     quantity?: true
     price?: true
+    addBy?: true
     exp?: true
     image?: true
     stock?: true
@@ -3282,6 +3286,7 @@ export namespace Prisma {
     store?: true
     quantity?: true
     price?: true
+    addBy?: true
     exp?: true
     image?: true
     stock?: true
@@ -3294,6 +3299,7 @@ export namespace Prisma {
     store?: true
     quantity?: true
     price?: true
+    addBy?: true
     exp?: true
     image?: true
     stock?: true
@@ -3393,6 +3399,7 @@ export namespace Prisma {
     store: string
     quantity: number
     price: number
+    addBy: string
     exp: Date | null
     image: string | null
     stock: $Enums.Stock
@@ -3424,6 +3431,7 @@ export namespace Prisma {
     store?: boolean
     quantity?: boolean
     price?: boolean
+    addBy?: boolean
     exp?: boolean
     image?: boolean
     stock?: boolean
@@ -3437,6 +3445,7 @@ export namespace Prisma {
     store?: boolean
     quantity?: boolean
     price?: boolean
+    addBy?: boolean
     exp?: boolean
     image?: boolean
     stock?: boolean
@@ -3450,6 +3459,7 @@ export namespace Prisma {
     store?: boolean
     quantity?: boolean
     price?: boolean
+    addBy?: boolean
     exp?: boolean
     image?: boolean
     stock?: boolean
@@ -3463,13 +3473,14 @@ export namespace Prisma {
     store?: boolean
     quantity?: boolean
     price?: boolean
+    addBy?: boolean
     exp?: boolean
     image?: boolean
     stock?: boolean
     createdAt?: boolean
   }
 
-  export type CheapieOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "store" | "quantity" | "price" | "exp" | "image" | "stock" | "createdAt", ExtArgs["result"]["cheapie"]>
+  export type CheapieOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "store" | "quantity" | "price" | "addBy" | "exp" | "image" | "stock" | "createdAt", ExtArgs["result"]["cheapie"]>
   export type CheapieInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     place?: boolean | PlaceDefaultArgs<ExtArgs>
   }
@@ -3491,6 +3502,7 @@ export namespace Prisma {
       store: string
       quantity: number
       price: number
+      addBy: string
       exp: Date | null
       image: string | null
       stock: $Enums.Stock
@@ -3924,6 +3936,7 @@ export namespace Prisma {
     readonly store: FieldRef<"Cheapie", 'String'>
     readonly quantity: FieldRef<"Cheapie", 'Int'>
     readonly price: FieldRef<"Cheapie", 'Float'>
+    readonly addBy: FieldRef<"Cheapie", 'String'>
     readonly exp: FieldRef<"Cheapie", 'DateTime'>
     readonly image: FieldRef<"Cheapie", 'String'>
     readonly stock: FieldRef<"Cheapie", 'Stock'>
@@ -4383,6 +4396,7 @@ export namespace Prisma {
     store: 'store',
     quantity: 'quantity',
     price: 'price',
+    addBy: 'addBy',
     exp: 'exp',
     image: 'image',
     stock: 'stock',
@@ -4607,6 +4621,7 @@ export namespace Prisma {
     store?: StringFilter<"Cheapie"> | string
     quantity?: IntFilter<"Cheapie"> | number
     price?: FloatFilter<"Cheapie"> | number
+    addBy?: StringFilter<"Cheapie"> | string
     exp?: DateTimeNullableFilter<"Cheapie"> | Date | string | null
     image?: StringNullableFilter<"Cheapie"> | string | null
     stock?: EnumStockFilter<"Cheapie"> | $Enums.Stock
@@ -4620,6 +4635,7 @@ export namespace Prisma {
     store?: SortOrder
     quantity?: SortOrder
     price?: SortOrder
+    addBy?: SortOrder
     exp?: SortOrderInput | SortOrder
     image?: SortOrderInput | SortOrder
     stock?: SortOrder
@@ -4636,6 +4652,7 @@ export namespace Prisma {
     store?: StringFilter<"Cheapie"> | string
     quantity?: IntFilter<"Cheapie"> | number
     price?: FloatFilter<"Cheapie"> | number
+    addBy?: StringFilter<"Cheapie"> | string
     exp?: DateTimeNullableFilter<"Cheapie"> | Date | string | null
     image?: StringNullableFilter<"Cheapie"> | string | null
     stock?: EnumStockFilter<"Cheapie"> | $Enums.Stock
@@ -4649,6 +4666,7 @@ export namespace Prisma {
     store?: SortOrder
     quantity?: SortOrder
     price?: SortOrder
+    addBy?: SortOrder
     exp?: SortOrderInput | SortOrder
     image?: SortOrderInput | SortOrder
     stock?: SortOrder
@@ -4669,6 +4687,7 @@ export namespace Prisma {
     store?: StringWithAggregatesFilter<"Cheapie"> | string
     quantity?: IntWithAggregatesFilter<"Cheapie"> | number
     price?: FloatWithAggregatesFilter<"Cheapie"> | number
+    addBy?: StringWithAggregatesFilter<"Cheapie"> | string
     exp?: DateTimeNullableWithAggregatesFilter<"Cheapie"> | Date | string | null
     image?: StringNullableWithAggregatesFilter<"Cheapie"> | string | null
     stock?: EnumStockWithAggregatesFilter<"Cheapie"> | $Enums.Stock
@@ -4788,6 +4807,7 @@ export namespace Prisma {
     name: string
     quantity: number
     price: number
+    addBy?: string
     exp?: Date | string | null
     image?: string | null
     stock?: $Enums.Stock
@@ -4801,6 +4821,7 @@ export namespace Prisma {
     store: string
     quantity: number
     price: number
+    addBy?: string
     exp?: Date | string | null
     image?: string | null
     stock?: $Enums.Stock
@@ -4811,6 +4832,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
+    addBy?: StringFieldUpdateOperationsInput | string
     exp?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
     stock?: EnumStockFieldUpdateOperationsInput | $Enums.Stock
@@ -4824,6 +4846,7 @@ export namespace Prisma {
     store?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
+    addBy?: StringFieldUpdateOperationsInput | string
     exp?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
     stock?: EnumStockFieldUpdateOperationsInput | $Enums.Stock
@@ -4836,6 +4859,7 @@ export namespace Prisma {
     store: string
     quantity: number
     price: number
+    addBy?: string
     exp?: Date | string | null
     image?: string | null
     stock?: $Enums.Stock
@@ -4846,6 +4870,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
+    addBy?: StringFieldUpdateOperationsInput | string
     exp?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
     stock?: EnumStockFieldUpdateOperationsInput | $Enums.Stock
@@ -4858,6 +4883,7 @@ export namespace Prisma {
     store?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
+    addBy?: StringFieldUpdateOperationsInput | string
     exp?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
     stock?: EnumStockFieldUpdateOperationsInput | $Enums.Stock
@@ -5074,6 +5100,7 @@ export namespace Prisma {
     store?: SortOrder
     quantity?: SortOrder
     price?: SortOrder
+    addBy?: SortOrder
     exp?: SortOrder
     image?: SortOrder
     stock?: SortOrder
@@ -5092,6 +5119,7 @@ export namespace Prisma {
     store?: SortOrder
     quantity?: SortOrder
     price?: SortOrder
+    addBy?: SortOrder
     exp?: SortOrder
     image?: SortOrder
     stock?: SortOrder
@@ -5104,6 +5132,7 @@ export namespace Prisma {
     store?: SortOrder
     quantity?: SortOrder
     price?: SortOrder
+    addBy?: SortOrder
     exp?: SortOrder
     image?: SortOrder
     stock?: SortOrder
@@ -5464,6 +5493,7 @@ export namespace Prisma {
     name: string
     quantity: number
     price: number
+    addBy?: string
     exp?: Date | string | null
     image?: string | null
     stock?: $Enums.Stock
@@ -5475,6 +5505,7 @@ export namespace Prisma {
     name: string
     quantity: number
     price: number
+    addBy?: string
     exp?: Date | string | null
     image?: string | null
     stock?: $Enums.Stock
@@ -5516,6 +5547,7 @@ export namespace Prisma {
     store?: StringFilter<"Cheapie"> | string
     quantity?: IntFilter<"Cheapie"> | number
     price?: FloatFilter<"Cheapie"> | number
+    addBy?: StringFilter<"Cheapie"> | string
     exp?: DateTimeNullableFilter<"Cheapie"> | Date | string | null
     image?: StringNullableFilter<"Cheapie"> | string | null
     stock?: EnumStockFilter<"Cheapie"> | $Enums.Stock
@@ -5571,6 +5603,7 @@ export namespace Prisma {
     name: string
     quantity: number
     price: number
+    addBy?: string
     exp?: Date | string | null
     image?: string | null
     stock?: $Enums.Stock
@@ -5581,6 +5614,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
+    addBy?: StringFieldUpdateOperationsInput | string
     exp?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
     stock?: EnumStockFieldUpdateOperationsInput | $Enums.Stock
@@ -5592,6 +5626,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
+    addBy?: StringFieldUpdateOperationsInput | string
     exp?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
     stock?: EnumStockFieldUpdateOperationsInput | $Enums.Stock
@@ -5603,6 +5638,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
+    addBy?: StringFieldUpdateOperationsInput | string
     exp?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
     stock?: EnumStockFieldUpdateOperationsInput | $Enums.Stock

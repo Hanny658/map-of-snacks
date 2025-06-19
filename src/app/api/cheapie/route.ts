@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, store, quantity, price, exp, image, stock } = body;
+    const { name, store, quantity, price, exp, image, stock, addBy } = body;
 
     if (
       !name ||
@@ -80,6 +80,7 @@ export async function POST(request: NextRequest) {
         quantity,
         price,
         stock,
+        ...(addBy ? { addBy } : {}),
         ...((exp && exp !== '') ? { exp: new Date(exp) } : {}),
         ...(image ? { image } : {}),
       },

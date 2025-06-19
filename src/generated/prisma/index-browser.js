@@ -141,6 +141,7 @@ exports.Prisma.CheapieScalarFieldEnum = {
   store: 'store',
   quantity: 'quantity',
   price: 'price',
+  addBy: 'addBy',
   exp: 'exp',
   image: 'image',
   stock: 'stock',
