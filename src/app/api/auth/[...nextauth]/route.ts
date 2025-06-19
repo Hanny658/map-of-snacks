@@ -26,9 +26,13 @@ const authOptions: AuthOptions = {
 
                 // Register
                 if (mode === "register") {
-                    const existing = await prisma.user.findUnique({ where: { email } });
-                    if (existing) {
+                    const email_existing = await prisma.user.findUnique({ where: { email } });
+                    if (email_existing) {
                         throw new Error("Email is already in use. Try login.");
+                    }
+                    const name_existing = await prisma.user.findUnique({ where: { name: username } });
+                    if (name_existing) {
+                        throw new Error("Oh, someone loved the same name as you do. If that's you, please login. If not, please pick another user name.");
                     }
                     const hashed = await hash(password, 12);
                     // create with PRISMA

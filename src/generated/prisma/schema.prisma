@@ -25,8 +25,8 @@ datasource db {
 
 model User {
   id        String   @id @default(uuid())
-  email     String   @unique // make sure email can be used for login
-  name      String
+  email     String   @unique
+  name      String   @unique @db.VarChar(32) // Unique username with application-limit of 32 chars
   password  String
   createdAt DateTime @default(now())
 }
@@ -45,7 +45,7 @@ model Cheapie {
   store     String
   quantity  Int
   price     Float
-  addBy     String    @default("System")
+  addBy     String    @default("System") @db.VarChar(32)
   exp       DateTime?
   image     String?
   stock     Stock     @default(low)
