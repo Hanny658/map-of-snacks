@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
           ? { name: { contains: name, mode: 'insensitive' } }
           : {}),
       },
-      orderBy: { id: 'asc' },
+      orderBy: { createdAt: 'desc' },
     });
 
     return NextResponse.json(cheapies);
