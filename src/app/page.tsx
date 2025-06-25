@@ -60,18 +60,18 @@ export default function MapOfSnacksPage() {
         />
       )}
       {isAddOpen && selectedPlaceId && (
-      <AddCheapieModal
-        placeId={selectedPlaceId}
-        onClose={() => setIsAddOpen(false)}
-        onCreated={() => {
-          setIsAddOpen(false)
-          // force re-fetch in PlaceDetailPanel by toggling selection
-          const pid = selectedPlaceId
-          setSelectedPlaceId(null)
-          setTimeout(() => setSelectedPlaceId(pid), 10)
-        }}
-      />
-    )}
+        <AddCheapieModal
+          placeId={selectedPlaceId}
+          onClose={() => setIsAddOpen(false)}
+          onCreated={() => {
+            setIsAddOpen(false)
+            // force re-fetch in PlaceDetailPanel by toggling selection
+            const pid = selectedPlaceId
+            setSelectedPlaceId(null)
+            setTimeout(() => setSelectedPlaceId(pid), 10)
+          }}
+        />
+      )}
       {/* More going here */}
     </div>
   )
@@ -117,19 +117,19 @@ function MapContainer({
       map.on('load', () => {
         // (1) Create 'places' source using the current `places` array:
         map.addSource('places', {
-        type: 'geojson',
-        data: {
-          type: 'FeatureCollection',
-          features: places.map((p) => ({
-            type: 'Feature',
-            geometry: { type: 'Point', coordinates: [p.lng, p.lat] },
-            properties: { id: p.identifier, name: p.name },
-          })),
-        },
-        cluster: true,
-        clusterRadius: 25,
-        clusterMaxZoom: 15,
-      });
+          type: 'geojson',
+          data: {
+            type: 'FeatureCollection',
+            features: places.map((p) => ({
+              type: 'Feature',
+              geometry: { type: 'Point', coordinates: [p.lng, p.lat] },
+              properties: { id: p.identifier, name: p.name },
+            })),
+          },
+          cluster: true,
+          clusterRadius: 25,
+          clusterMaxZoom: 15,
+        });
 
         // (2) Clustered circles
         map.addLayer({
@@ -237,6 +237,39 @@ function MapContainer({
         });
       });
 
+      if ('geolocation' in navigator) {
+        let userMarker: mapboxgl.Marker | null = null
+        const watchId = navigator.geolocation.watchPosition(
+          (pos) => {
+            const { latitude, longitude } = pos.coords
+
+            if (!userMarker) {
+              // first time: create the marker
+              const el = document.createElement('div')
+              el.innerHTML = '<i class="bi bi-geo-fill text-blue-600 text-2xl text-shadow-black/50 text-shadow-2xs"></i>'
+              userMarker = new mapboxgl.Marker({ element: el, anchor: 'center' })
+                .setLngLat([longitude, latitude])
+                .addTo(map)
+            } else {
+              // update position
+              userMarker.setLngLat([longitude, latitude])
+            }
+
+            // re-center map on user (saved for future potential needs)
+            // map.easeTo({ center: [longitude, latitude], duration: 1000 })
+          },
+          (err) => {
+            console.error('Geolocation error:', err)
+          },
+          { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 }
+        )
+
+        // cleanup the watch on unmount
+        map.once('remove', () => {
+          navigator.geolocation.clearWatch(watchId)
+        })
+      }
+
       return map;
     }
 
@@ -262,7 +295,7 @@ function MapContainer({
     } else {
       createMap(MELBOURNE_CENTER);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [places]);
 
   // Update the 'places' source data whenever `places` array changes
@@ -317,11 +350,13 @@ function MapContainer({
     ])
   }, [selectedPlaceId, places])
 
-  if (!places.length) { return (
+  if (!places.length) {
+    return (
       <div className="w-full h-screen flex items-center justify-center bg-gray-50">
         <p className="text-lg text-gray-600">Fetching latest data for you...</p>
       </div>
-  )}
+    )
+  }
 
   return <div ref={mapContainer} className="w-full h-full" />
 }
