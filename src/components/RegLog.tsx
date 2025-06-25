@@ -7,7 +7,7 @@ import { signIn, signOut, useSession } from "next-auth/react";
 export default function RegLogModal() {
     const { data: session } = useSession();
     const [isOpen, setIsOpen] = useState(false);
-    const [mode, setMode] = useState<"login" | "register">("login");
+    const [mode, /*setMode*/] = useState<"login" | "register">("login");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [username, setUsername] = useState("");
@@ -24,7 +24,7 @@ export default function RegLogModal() {
             mode,
             email,
             password,
-            ...(mode === "register" && { username }),
+            ...(mode === "register" && { username }), // TODO: Alternative username login
         });
         if (res?.error) {
             setError(res.error);
@@ -149,7 +149,7 @@ export default function RegLogModal() {
 
                     <p className="mt-4 text-center text-sm">
                         <b className="text-gray-500">Register will be available after Close Beta</b>
-                        {mode === "login"
+                        {/* {mode === "login"
                             ? "Don't have an account?"
                             : "Already have an account?"}{" "}
                         <button
@@ -157,7 +157,7 @@ export default function RegLogModal() {
                             className="text-blue-600 hover:underline"
                         >
                             {mode === "login" ? "Register" : "Login"}
-                        </button>
+                        </button> */}
                     </p>
                 </div>
             </div>

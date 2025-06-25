@@ -2,7 +2,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { hash } from "bcryptjs";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 // GET /api/user — return all users
 export async function GET() {
@@ -43,8 +42,7 @@ export async function POST(req: Request) {
         return NextResponse.json(user, { status: 201 });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-        if (error instanceof PrismaClientKnownRequestError && error.code === 'P2002') {
-        // Unique constraint failed
+        if (error.code === 'P2002' || error?.meta?.target?.includes('username')) {
         return NextResponse.json(
             { error: 'Username already taken. Please choose another.' },
             { status: 409 }

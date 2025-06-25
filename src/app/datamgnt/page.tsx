@@ -83,8 +83,9 @@ export default function CMSPage() {
       setFormData(reset)
       alert('Creation successful.')
     } else {
-      console.warn(res);
-      alert('Oh no, creation is failed... Check console for more info.');
+      const resdata = await res.json();
+      console.warn(resdata);
+      alert(resdata.error || 'Oh no, creation failed... Check console for more info.');
     }
   }
 
