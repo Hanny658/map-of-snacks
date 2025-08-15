@@ -72,7 +72,6 @@ export default function MapOfSnacksPage() {
           }}
         />
       )}
-      {/* More going here */}
     </div>
   )
 }
