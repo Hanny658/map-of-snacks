@@ -1,0 +1,34 @@
+name: Deploy the Snack Map and database schema on main branch update
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run deploy.sh on server via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script_stop: true 
+          command_timeout: 10m
+          script: |
+            set -euo pipefail
+            cd /home/ecs-user/map-of-snacks
+            echo "[INFO] Current dir: $(pwd)"
+            chmod +x ./deploy.sh
+            ./deploy.sh
