@@ -20,8 +20,7 @@
     "postcss": "^8.5.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "sharp": "^0.34.2",
-    "website-hanny": "file:"
+    "sharp": "^0.34.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

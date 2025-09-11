@@ -157,7 +157,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "d:\\MyProjectSpace\\map-of-snacks\\src\\generated\\prisma",
+      "value": "D:\\MyProjectSpace\\map-of-snacks\\src\\generated\\prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -171,7 +171,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "d:\\MyProjectSpace\\map-of-snacks\\prisma\\schema.prisma",
+    "sourceFilePath": "D:\\MyProjectSpace\\map-of-snacks\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
