@@ -32,8 +32,9 @@ model User {
 }
 
 model Place {
-  identifier String    @id
+  identifier String    @id @default(uuid())
   name       String
+  address    String
   lng        Float
   lat        Float
   cheapies   Cheapie[]

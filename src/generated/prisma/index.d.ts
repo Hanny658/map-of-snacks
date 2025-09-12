@@ -2120,6 +2120,7 @@ export namespace Prisma {
   export type PlaceMinAggregateOutputType = {
     identifier: string | null
     name: string | null
+    address: string | null
     lng: number | null
     lat: number | null
   }
@@ -2127,6 +2128,7 @@ export namespace Prisma {
   export type PlaceMaxAggregateOutputType = {
     identifier: string | null
     name: string | null
+    address: string | null
     lng: number | null
     lat: number | null
   }
@@ -2134,6 +2136,7 @@ export namespace Prisma {
   export type PlaceCountAggregateOutputType = {
     identifier: number
     name: number
+    address: number
     lng: number
     lat: number
     _all: number
@@ -2153,6 +2156,7 @@ export namespace Prisma {
   export type PlaceMinAggregateInputType = {
     identifier?: true
     name?: true
+    address?: true
     lng?: true
     lat?: true
   }
@@ -2160,6 +2164,7 @@ export namespace Prisma {
   export type PlaceMaxAggregateInputType = {
     identifier?: true
     name?: true
+    address?: true
     lng?: true
     lat?: true
   }
@@ -2167,6 +2172,7 @@ export namespace Prisma {
   export type PlaceCountAggregateInputType = {
     identifier?: true
     name?: true
+    address?: true
     lng?: true
     lat?: true
     _all?: true
@@ -2261,6 +2267,7 @@ export namespace Prisma {
   export type PlaceGroupByOutputType = {
     identifier: string
     name: string
+    address: string
     lng: number
     lat: number
     _count: PlaceCountAggregateOutputType | null
@@ -2287,6 +2294,7 @@ export namespace Prisma {
   export type PlaceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     identifier?: boolean
     name?: boolean
+    address?: boolean
     lng?: boolean
     lat?: boolean
     cheapies?: boolean | Place$cheapiesArgs<ExtArgs>
@@ -2296,6 +2304,7 @@ export namespace Prisma {
   export type PlaceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     identifier?: boolean
     name?: boolean
+    address?: boolean
     lng?: boolean
     lat?: boolean
   }, ExtArgs["result"]["place"]>
@@ -2303,6 +2312,7 @@ export namespace Prisma {
   export type PlaceSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     identifier?: boolean
     name?: boolean
+    address?: boolean
     lng?: boolean
     lat?: boolean
   }, ExtArgs["result"]["place"]>
@@ -2310,11 +2320,12 @@ export namespace Prisma {
   export type PlaceSelectScalar = {
     identifier?: boolean
     name?: boolean
+    address?: boolean
     lng?: boolean
     lat?: boolean
   }
 
-  export type PlaceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"identifier" | "name" | "lng" | "lat", ExtArgs["result"]["place"]>
+  export type PlaceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"identifier" | "name" | "address" | "lng" | "lat", ExtArgs["result"]["place"]>
   export type PlaceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     cheapies?: boolean | Place$cheapiesArgs<ExtArgs>
     _count?: boolean | PlaceCountOutputTypeDefaultArgs<ExtArgs>
@@ -2330,6 +2341,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       identifier: string
       name: string
+      address: string
       lng: number
       lat: number
     }, ExtArgs["result"]["place"]>
@@ -2758,6 +2770,7 @@ export namespace Prisma {
   interface PlaceFieldRefs {
     readonly identifier: FieldRef<"Place", 'String'>
     readonly name: FieldRef<"Place", 'String'>
+    readonly address: FieldRef<"Place", 'String'>
     readonly lng: FieldRef<"Place", 'Float'>
     readonly lat: FieldRef<"Place", 'Float'>
   }
@@ -4383,6 +4396,7 @@ export namespace Prisma {
   export const PlaceScalarFieldEnum: {
     identifier: 'identifier',
     name: 'name',
+    address: 'address',
     lng: 'lng',
     lat: 'lat'
   };
@@ -4566,6 +4580,7 @@ export namespace Prisma {
     NOT?: PlaceWhereInput | PlaceWhereInput[]
     identifier?: StringFilter<"Place"> | string
     name?: StringFilter<"Place"> | string
+    address?: StringFilter<"Place"> | string
     lng?: FloatFilter<"Place"> | number
     lat?: FloatFilter<"Place"> | number
     cheapies?: CheapieListRelationFilter
@@ -4574,6 +4589,7 @@ export namespace Prisma {
   export type PlaceOrderByWithRelationInput = {
     identifier?: SortOrder
     name?: SortOrder
+    address?: SortOrder
     lng?: SortOrder
     lat?: SortOrder
     cheapies?: CheapieOrderByRelationAggregateInput
@@ -4585,6 +4601,7 @@ export namespace Prisma {
     OR?: PlaceWhereInput[]
     NOT?: PlaceWhereInput | PlaceWhereInput[]
     name?: StringFilter<"Place"> | string
+    address?: StringFilter<"Place"> | string
     lng?: FloatFilter<"Place"> | number
     lat?: FloatFilter<"Place"> | number
     cheapies?: CheapieListRelationFilter
@@ -4593,6 +4610,7 @@ export namespace Prisma {
   export type PlaceOrderByWithAggregationInput = {
     identifier?: SortOrder
     name?: SortOrder
+    address?: SortOrder
     lng?: SortOrder
     lat?: SortOrder
     _count?: PlaceCountOrderByAggregateInput
@@ -4608,6 +4626,7 @@ export namespace Prisma {
     NOT?: PlaceScalarWhereWithAggregatesInput | PlaceScalarWhereWithAggregatesInput[]
     identifier?: StringWithAggregatesFilter<"Place"> | string
     name?: StringWithAggregatesFilter<"Place"> | string
+    address?: StringWithAggregatesFilter<"Place"> | string
     lng?: FloatWithAggregatesFilter<"Place"> | number
     lat?: FloatWithAggregatesFilter<"Place"> | number
   }
@@ -4751,16 +4770,18 @@ export namespace Prisma {
   }
 
   export type PlaceCreateInput = {
-    identifier: string
+    identifier?: string
     name: string
+    address: string
     lng: number
     lat: number
     cheapies?: CheapieCreateNestedManyWithoutPlaceInput
   }
 
   export type PlaceUncheckedCreateInput = {
-    identifier: string
+    identifier?: string
     name: string
+    address: string
     lng: number
     lat: number
     cheapies?: CheapieUncheckedCreateNestedManyWithoutPlaceInput
@@ -4769,6 +4790,7 @@ export namespace Prisma {
   export type PlaceUpdateInput = {
     identifier?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    address?: StringFieldUpdateOperationsInput | string
     lng?: FloatFieldUpdateOperationsInput | number
     lat?: FloatFieldUpdateOperationsInput | number
     cheapies?: CheapieUpdateManyWithoutPlaceNestedInput
@@ -4777,14 +4799,16 @@ export namespace Prisma {
   export type PlaceUncheckedUpdateInput = {
     identifier?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    address?: StringFieldUpdateOperationsInput | string
     lng?: FloatFieldUpdateOperationsInput | number
     lat?: FloatFieldUpdateOperationsInput | number
     cheapies?: CheapieUncheckedUpdateManyWithoutPlaceNestedInput
   }
 
   export type PlaceCreateManyInput = {
-    identifier: string
+    identifier?: string
     name: string
+    address: string
     lng: number
     lat: number
   }
@@ -4792,6 +4816,7 @@ export namespace Prisma {
   export type PlaceUpdateManyMutationInput = {
     identifier?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    address?: StringFieldUpdateOperationsInput | string
     lng?: FloatFieldUpdateOperationsInput | number
     lat?: FloatFieldUpdateOperationsInput | number
   }
@@ -4799,6 +4824,7 @@ export namespace Prisma {
   export type PlaceUncheckedUpdateManyInput = {
     identifier?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    address?: StringFieldUpdateOperationsInput | string
     lng?: FloatFieldUpdateOperationsInput | number
     lat?: FloatFieldUpdateOperationsInput | number
   }
@@ -4996,6 +5022,7 @@ export namespace Prisma {
   export type PlaceCountOrderByAggregateInput = {
     identifier?: SortOrder
     name?: SortOrder
+    address?: SortOrder
     lng?: SortOrder
     lat?: SortOrder
   }
@@ -5008,6 +5035,7 @@ export namespace Prisma {
   export type PlaceMaxOrderByAggregateInput = {
     identifier?: SortOrder
     name?: SortOrder
+    address?: SortOrder
     lng?: SortOrder
     lat?: SortOrder
   }
@@ -5015,6 +5043,7 @@ export namespace Prisma {
   export type PlaceMinOrderByAggregateInput = {
     identifier?: SortOrder
     name?: SortOrder
+    address?: SortOrder
     lng?: SortOrder
     lat?: SortOrder
   }
@@ -5555,15 +5584,17 @@ export namespace Prisma {
   }
 
   export type PlaceCreateWithoutCheapiesInput = {
-    identifier: string
+    identifier?: string
     name: string
+    address: string
     lng: number
     lat: number
   }
 
   export type PlaceUncheckedCreateWithoutCheapiesInput = {
-    identifier: string
+    identifier?: string
     name: string
+    address: string
     lng: number
     lat: number
   }
@@ -5587,6 +5618,7 @@ export namespace Prisma {
   export type PlaceUpdateWithoutCheapiesInput = {
     identifier?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    address?: StringFieldUpdateOperationsInput | string
     lng?: FloatFieldUpdateOperationsInput | number
     lat?: FloatFieldUpdateOperationsInput | number
   }
@@ -5594,6 +5626,7 @@ export namespace Prisma {
   export type PlaceUncheckedUpdateWithoutCheapiesInput = {
     identifier?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    address?: StringFieldUpdateOperationsInput | string
     lng?: FloatFieldUpdateOperationsInput | number
     lat?: FloatFieldUpdateOperationsInput | number
   }

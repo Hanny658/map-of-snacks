@@ -131,6 +131,7 @@ exports.Prisma.UserScalarFieldEnum = {
 exports.Prisma.PlaceScalarFieldEnum = {
   identifier: 'identifier',
   name: 'name',
+  address: 'address',
   lng: 'lng',
   lat: 'lat'
 };
