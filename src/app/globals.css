@@ -35,3 +35,18 @@ body {
 .font-code {
   font-family: 'CodeFont', monospace;
 }
+
+@keyframes scaleIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.mapmenu-scale-in {
+  animation: scaleIn 0.3s ease-out forwards;
+}
