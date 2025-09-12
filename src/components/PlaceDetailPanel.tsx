@@ -10,6 +10,7 @@ import type { Cheapie } from '@/types/cheapie';
 interface PlaceDetailPanelProps {
     placeName: string
     placeId: string
+    placeAddr?: string
     onClose: () => void
     onAdd: () => void
 }
@@ -64,6 +65,7 @@ const stockColorMap: Record<Cheapie['stock'], string> = {
 
 export default function PlaceDetailPanel({
     placeName,
+    placeAddr,
     placeId,
     onClose,
     onAdd,
@@ -102,7 +104,10 @@ export default function PlaceDetailPanel({
         ">
             {/* Header with title and close button */}
             <div className="sticky top-0 bg-white z-10 flex justify-between items-center px-4 py-2 border-b">
+                <span>
                 <h2 className="text-xl text-black font-semibold">{placeName}</h2>
+                {placeAddr && <p className="text-right text-sm text-gray-500 font-semibold">{placeAddr}</p>}
+                </span>
                 <button
                     onClick={onClose}
                     className="text-gray-500 hover:text-gray-700"

@@ -11,13 +11,6 @@ import RegLogModal from 'src/components/RegLog'
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || ''
 
-interface Place {
-  identifier: string
-  name: string
-  lng: number
-  lat: number
-}
-
 export default function MapOfSnacksPage() {
   const [places, setPlaces] = useState<Place[]>([])
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null)
@@ -54,6 +47,7 @@ export default function MapOfSnacksPage() {
       {selectedPlaceId && (
         <PlaceDetailPanel
           placeName={places.find((p) => p.identifier === selectedPlaceId)?.name ?? ''}
+          placeAddr={places.find((p) => p.identifier === selectedPlaceId)?.address ?? ''}
           placeId={selectedPlaceId}
           onClose={() => setSelectedPlaceId(null)}
           onAdd={() => setIsAddOpen(true)}
