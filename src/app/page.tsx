@@ -8,6 +8,7 @@ import SearchBar from 'src/components/SearchBar'
 import PlaceDetailPanel from 'src/components/PlaceDetailPanel'
 import AddCheapieModal from 'src/components/AddCheapieModal'
 import RegLogModal from 'src/components/RegLog'
+import MapMenu from 'src/components/MapMenu'
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || ''
 
@@ -38,10 +39,12 @@ export default function MapOfSnacksPage() {
       </div>
       {/* SearchBar positioned top-right */}
       <SearchBar onSelectPlace={(id) => setSelectedPlaceId(id)} />
+
       <MapContainer
         places={places}
         selectedPlaceId={selectedPlaceId}
         onSelectPlace={(id) => setSelectedPlaceId(id)}
+        setPlaces={setPlaces}
       />
       {/*  Conditionally render the detail panel */}
       {selectedPlaceId && (
@@ -81,13 +84,23 @@ function MapContainer({
   places,
   selectedPlaceId,
   onSelectPlace,
+  setPlaces,
 }: {
   places: Place[]
   selectedPlaceId: string | null
   onSelectPlace: (id: string) => void
+  setPlaces: React.Dispatch<React.SetStateAction<Place[]>>
 }) {
   const mapContainer = useRef<HTMLDivElement>(null)
   const mapRef = useRef<mapboxgl.Map | null>(null)
+  const [menuPos, setMenuPos] = useState<{
+      lng: number
+      lat: number
+      screenX: number
+      screenY: number
+  } | null>(null)
+  const rightClickTimer = useRef<number | null>(null)
+  const didTilt = useRef(false)
 
   // Initialize map only once
   useEffect(() => {
@@ -261,6 +274,76 @@ function MapContainer({
         map.once('remove', () => {
           navigator.geolocation.clearWatch(watchId)
         })
+
+        map.on('contextmenu', (e) => {
+          // prevent default mapbox "contextmenu" popup
+          e.preventDefault()
+
+          // If user held button long → Mapbox tilt already handled, skip
+          if (rightClickTimer.current) {
+            clearTimeout(rightClickTimer.current)
+            rightClickTimer.current = null
+          }
+
+          if (didTilt.current) {
+            didTilt.current = false
+            return
+          }
+
+          // open custom menu at click pos
+          const rect = map.getCanvas().getBoundingClientRect()
+          setMenuPos({
+            lng: e.lngLat.lng,
+            lat: e.lngLat.lat,
+            screenX: e.point.x + rect.left,
+            screenY: e.point.y + rect.top,
+          })
+        })
+
+        // Detect right click hold for tilt
+        map.getCanvas().addEventListener('mousedown', (ev) => {
+          if (ev.button === 2) {
+            didTilt.current = false
+            rightClickTimer.current = window.setTimeout(() => {
+              // long press → mark as tilt
+              didTilt.current = true
+              rightClickTimer.current = null
+            }, 500)
+          }
+        })
+        map.getCanvas().addEventListener('mouseup', (ev) => {
+          if (ev.button === 2 && rightClickTimer.current) {
+            clearTimeout(rightClickTimer.current)
+            rightClickTimer.current = null
+            // short right click → contextmenu event will open menu
+          }
+        })
+
+        // [Mobile] long press
+        let touchTimer: number | null = null
+        map.getCanvas().addEventListener('touchstart', (ev) => {
+          if (ev.touches.length === 1) {
+            touchTimer = window.setTimeout(() => {
+              const touch = ev.touches[0]
+              const rect = map.getCanvas().getBoundingClientRect()
+              const point = [touch.clientX - rect.left, touch.clientY - rect.top] as [number, number]
+              const lngLat = map.unproject(point)
+              setMenuPos({
+                lng: lngLat.lng,
+                lat: lngLat.lat,
+                screenX: touch.clientX,
+                screenY: touch.clientY,
+              })
+              touchTimer = null
+            }, 1000)
+          }
+        })
+        map.getCanvas().addEventListener('touchend', () => {
+          if (touchTimer) {
+            clearTimeout(touchTimer)
+            touchTimer = null
+          }
+        })
       }
 
       return map;
@@ -351,5 +434,32 @@ function MapContainer({
     )
   }
 
-  return <div ref={mapContainer} className="w-full h-full" />
+  return <>
+    {/* The right click Menu */}
+    {menuPos &&
+      <MapMenu
+        lng={menuPos.lng}
+        lat={menuPos.lat}
+        screenX={menuPos.screenX}
+        screenY={menuPos.screenY}
+        onClose={() => setMenuPos(null)}
+        onPlaceAdded={(newPlace: Place) => {
+          // center map to new place
+          const map = mapRef.current
+          setPlaces((prev: Place[]) => [...prev, newPlace])
+
+          if (map && newPlace) {
+            map.easeTo({
+              center: [newPlace.lng, newPlace.lat],
+              zoom: 16,
+              duration: 1000,
+            })
+          }
+          onSelectPlace(newPlace.identifier)
+          setMenuPos(null)
+        }}
+      />
+    }
+    <div ref={mapContainer} className="w-full h-full" />
+  </>
 }

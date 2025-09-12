@@ -159,7 +159,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "D:\\MyProjectSpace\\map-of-snacks\\src\\generated\\prisma",
+      "value": "d:\\MyProjectSpace\\map-of-snacks\\src\\generated\\prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -173,7 +173,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "D:\\MyProjectSpace\\map-of-snacks\\prisma\\schema.prisma",
+    "sourceFilePath": "d:\\MyProjectSpace\\map-of-snacks\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -187,6 +187,7 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
