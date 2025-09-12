@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import { useSession } from "next-auth/react";
 
 interface MapMenuProps {
     lng: number
@@ -15,6 +16,8 @@ export default function MapMenu({ lng, lat, screenX, screenY, onClose, onPlaceAd
     const [isFormOpen, setIsFormOpen] = useState(false)
     const [name, setName] = useState('')
     const [address, setAddress] = useState('')
+
+    const { data: session } = useSession();
 
     const handleCancel = () => {
         if (name || address) {
@@ -134,13 +137,22 @@ export default function MapMenu({ lng, lat, screenX, screenY, onClose, onPlaceAd
                             >
                                 Cancel
                             </button>
-                            <button
-                                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                                onClick={handleSubmit}
-                                disabled={!name || !address}
-                            >
-                                Add Store
-                            </button>
+                            {session ? 
+                                <button
+                                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                                    onClick={handleSubmit}
+                                    disabled={!name || !address}
+                                >
+                                    Add Store
+                                </button>
+                                :
+                                <button
+                                    className="px-4 py-2 bg-blue-900 text-white rounded hover:bg-blue-900"
+                                    disabled
+                                >
+                                    Please Log-in to Contribute~
+                                </button>
+                            }
                         </div>
                     </div>
                 </div>
