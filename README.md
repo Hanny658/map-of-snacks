@@ -14,7 +14,7 @@ Check it out live at [snackmap.org](https://snackmap.org) !
 | **Frontend**   | Next.js (.tsx), React         |
 | **Backend**    | Prisma ORM, PostgreSQL        |
 | **Map**        | Mapbox GL (WebGL 2.0+)         |
-| **Languages**  | TypeScript (≈75%), JavaScript (≈25%), minimal CSS
+| **Languages**  | TypeScript,  minimal CSS (since styling with Tailwind)
 
 - **Next.js**: Provides server-side rendering, routing, and static-site capabilities.
 - **Prisma + PostgreSQL**: Manages the database of snack locations and user submissions for fast, reliable querying.
@@ -46,7 +46,6 @@ cd map-of-snacks
 
 # Install dependencies
 npm install
-````
 
 ### Environment Setup
 
@@ -57,7 +56,7 @@ DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE"
 NEXT_PUBLIC_MAPBOX_TOKEN="your-mapbox-access-token"
 ```
 
-### Database Migrations
+### Database Migrations (for dev)
 
 ```bash
 npx prisma migrate dev
