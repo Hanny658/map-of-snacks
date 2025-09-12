@@ -159,7 +159,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "d:\\MyProjectSpace\\map-of-snacks\\src\\generated\\prisma",
+      "value": "D:\\MyProjectSpace\\map-of-snacks\\src\\generated\\prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -173,7 +173,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "d:\\MyProjectSpace\\map-of-snacks\\prisma\\schema.prisma",
+    "sourceFilePath": "D:\\MyProjectSpace\\map-of-snacks\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -187,7 +187,6 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
-  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
@@ -196,8 +195,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\nenum Stock {\n  plenty\n  mid\n  low\n  gone\n}\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\n// ==== Following are the data types, note that each one should have a \"name\" field for displaying ====\n\nmodel User {\n  id        String   @id @default(uuid())\n  email     String   @unique\n  name      String   @unique @db.VarChar(32) // Unique username with application-limit of 32 chars\n  password  String\n  createdAt DateTime @default(now())\n}\n\nmodel Place {\n  identifier String    @id @default(uuid())\n  name       String\n  address    String\n  lng        Float\n  lat        Float\n  cheapies   Cheapie[]\n}\n\nmodel Cheapie {\n  id        Int       @id @default(autoincrement())\n  name      String\n  store     String\n  quantity  Int\n  price     Float\n  addBy     String    @default(\"System\") @db.VarChar(32)\n  exp       DateTime?\n  image     String?\n  stock     Stock     @default(low)\n  createdAt DateTime  @default(now())\n\n  place Place @relation(fields: [store], references: [identifier])\n}\n",
-  "inlineSchemaHash": "b98a0daf716f3c8716b21fdab40b94deec5feba62705c8ea4a773947fefa3f0a",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\nenum Stock {\n  plenty\n  mid\n  low\n  gone\n}\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\n// ==== Following are the data types, note that each one should have a \"name\" field for displaying ====\n\nmodel User {\n  id        String   @id @default(uuid())\n  email     String   @unique\n  name      String   @unique @db.VarChar(32) // Unique username with application-limit of 32 chars\n  password  String\n  createdAt DateTime @default(now())\n}\n\nmodel Place {\n  identifier String    @id @unique @default(uuid())\n  name       String\n  address    String\n  lng        Float\n  lat        Float\n  cheapies   Cheapie[]\n}\n\nmodel Cheapie {\n  id        Int       @id @default(autoincrement())\n  name      String\n  store     String\n  quantity  Int\n  price     Float\n  addBy     String    @default(\"System\") @db.VarChar(32)\n  exp       DateTime?\n  image     String?\n  stock     Stock     @default(low)\n  createdAt DateTime  @default(now())\n\n  place Place @relation(fields: [store], references: [identifier])\n}\n",
+  "inlineSchemaHash": "c011c78d3a62ab660b658c2b0c436e0bbdb4bd97e02af26d5de523ca1f1c6705",
   "copyEngine": true
 }
 

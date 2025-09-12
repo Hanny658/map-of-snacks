@@ -38,17 +38,18 @@ export async function PUT(
 
   try {
     const body = await request.json()
-    const { name, lng, lat } = body
+    const { name, address, lng, lat } = body
 
     if (
       (name !== undefined && typeof name !== 'string') ||
+      (address !== undefined && typeof address !== 'string') ||
       (lng !== undefined && typeof lng !== 'number') ||
       (lat !== undefined && typeof lat !== 'number')
     ) {
       return NextResponse.json(
         {
           error:
-            'name shall be string, lng/lat are number, and please at least update something.',
+            'name/address shall be string, lng/lat are number, and please at least update something.',
         },
         { status: 400 }
       )
@@ -58,6 +59,7 @@ export async function PUT(
       where: { identifier },
       data: {
         ...(name !== undefined ? { name } : {}),
+        ...(address !== undefined ? { address } : {}),
         ...(lng !== undefined ? { lng } : {}),
         ...(lat !== undefined ? { lat } : {}),
       },

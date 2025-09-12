@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
       where: name
         ? { name: { contains: name, mode: 'insensitive' } }
         : {},
-      orderBy: { identifier: 'asc' },
+      orderBy: { name: 'asc' },
     });
 
     return NextResponse.json(places);
@@ -29,28 +29,28 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { identifier, name, lng, lat } = body;
+    const { name, address, lng, lat } = body;
 
     if (
-      !identifier ||
-      typeof identifier !== 'string' ||
-      !name ||
-      typeof name !== 'string' ||
-      typeof lng !== 'number' ||
-      typeof lat !== 'number'
+      !name || typeof name !== 'string' ||
+      !address || typeof address !== 'string' ||
+      !lng || typeof lng !== 'number' ||
+      !lat || typeof lat !== 'number'
     ) {
       return NextResponse.json(
         {
           error:
-            'Please provide identifier(string)、name(string)、lng(number)、lat(number)',
+            'Please provide address(string)、name(string)、lng(number)、lat(number)',
         },
         { status: 400 }
       );
     }
 
-    const newPlace = await prisma.place.create({
-      data: { identifier, name, lng, lat },
-    });
+    const newPlace = await prisma.place.create(
+      {
+      data: { name, address, lng, lat },
+      }
+    );
 
     return NextResponse.json(newPlace, { status: 201 });
   } catch (error) {

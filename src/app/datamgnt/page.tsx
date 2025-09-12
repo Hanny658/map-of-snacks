@@ -163,7 +163,7 @@ export default function CMSPage() {
                       className="cursor-pointer mb-2 px-2 py-1 rounded hover:bg-gray-100 flex justify-between items-center"
                     >
                       <span className="text-blue-700">
-                        {pkField}: {displayId} {displayName ? `| Name: ${displayName}` : ''}
+                        {displayName ? `Name: ${displayName} | ` : ''} {pkField}: {displayId} 
                       </span>
                     </li>
                   )

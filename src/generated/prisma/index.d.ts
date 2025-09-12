@@ -4605,7 +4605,7 @@ export namespace Prisma {
     lng?: FloatFilter<"Place"> | number
     lat?: FloatFilter<"Place"> | number
     cheapies?: CheapieListRelationFilter
-  }, "identifier">
+  }, "identifier" | "identifier">
 
   export type PlaceOrderByWithAggregationInput = {
     identifier?: SortOrder

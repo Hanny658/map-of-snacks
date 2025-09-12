@@ -9,7 +9,7 @@ export type FieldDef = {
     type: 'string' | 'int' | 'float' | 'datetime' | 'image-url' | 'enum'
     /** Whether trigger file-uploader */
     isFile?: boolean
-    /** Does not render to update or add new */
+    /** Does not render to update or add new, but display in details */
     isReadOnly?: boolean
     /** mark a field that is optional, which will make it not checked when submit new ones */
     isOptional?: boolean 
@@ -24,15 +24,16 @@ export type FieldDef = {
  */
 export const CMSConfig: Record<string, FieldDef[]> = {
     User: [
-        { name: 'id', type: 'string', label: 'Id', isReadOnly: true },
+        { name: 'id', type: 'string', label: 'ID', isReadOnly: true },
         { name: 'name', type: 'string', label: 'User Name' },
         { name: 'email', type: 'string', label: 'Email' },
         { name: 'password', type: 'string', label: 'Password' },
         { name: 'createdAt', type: 'datetime', label: 'Created At', isReadOnly: true },
     ],
     Place: [
-        { name: 'identifier', type: 'string', label: 'Identifier' },
+        { name: 'identifier', type: 'string', label: 'Identifier', isReadOnly: true },
         { name: 'name', type: 'string', label: 'Name' },
+        { name: 'address', type: 'string', label: 'Address' },
         { name: 'lng', type: 'float', label: 'Longitude' },
         { name: 'lat', type: 'float', label: 'Latitude' },
     ],
