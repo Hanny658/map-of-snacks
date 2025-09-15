@@ -28,6 +28,8 @@ model User {
   email     String   @unique
   name      String   @unique @db.VarChar(32) // Unique username with application-limit of 32 chars
   password  String
+  avatar    String? // Avatar picture
+  bio       String?
   createdAt DateTime @default(now())
 }
 
