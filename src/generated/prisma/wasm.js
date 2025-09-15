@@ -127,6 +127,7 @@ exports.Prisma.UserScalarFieldEnum = {
   password: 'password',
   avatar: 'avatar',
   bio: 'bio',
+  status: 'status',
   createdAt: 'createdAt'
 };
 
@@ -165,6 +166,13 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.UserStatus = exports.$Enums.UserStatus = {
+  pending: 'pending',
+  active: 'active',
+  contributor: 'contributor',
+  banned: 'banned'
+};
+
 exports.Stock = exports.$Enums.Stock = {
   plenty: 'plenty',
   mid: 'mid',

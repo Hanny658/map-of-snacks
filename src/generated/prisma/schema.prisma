@@ -11,6 +11,13 @@ enum Stock {
   gone
 }
 
+enum UserStatus {
+  pending // special status reserved for apply-approve process
+  active // normal active user
+  contributor // contributor user, higher access to the functions
+  banned // user that disobeyed the community rules, reserved to prevent re-registration
+}
+
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -24,13 +31,14 @@ datasource db {
 // ==== Following are the data types, note that each one should have a "name" field for displaying ====
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  name      String   @unique @db.VarChar(32) // Unique username with application-limit of 32 chars
+  id        String      @id @default(uuid())
+  email     String      @unique
+  name      String      @unique @db.VarChar(32) // Unique username with application-limit of 32 chars
   password  String
   avatar    String? // Avatar picture
   bio       String?
-  createdAt DateTime @default(now())
+  status    UserStatus? @default(active)
+  createdAt DateTime    @default(now())
 }
 
 model Place {
