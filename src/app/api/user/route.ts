@@ -12,7 +12,7 @@ export async function GET() {
 // POST /api/user — create a new user
 export async function POST(req: Request) {
     try {
-        const { name, email, password } = await req.json();
+        const { name, email, password, avatar, bio, status } = await req.json();
 
         // Basic validation
         if (!name || !email || !password) {
@@ -36,7 +36,14 @@ export async function POST(req: Request) {
 
         // Create user
         const user = await prisma.user.create({
-            data: { name, email, password: hashedPassword },
+            data: { 
+                name, 
+                email, 
+                password: hashedPassword, 
+                ...(avatar && {avatar}),
+                ...(bio && {bio}),
+                ...(status && {status}),
+            },
         });
 
         return NextResponse.json(user, { status: 201 });
@@ -44,12 +51,12 @@ export async function POST(req: Request) {
     } catch (error: any) {
         if (error.code === 'P2002' || error?.meta?.target?.includes('username')) {
         return NextResponse.json(
-            { error: 'Username already taken. Please choose another.' },
+            { error: 'Username already taken, please choose another one. We want you to be Unique!' },
             { status: 409 }
         )
         }
         return NextResponse.json(
-            { error: error.message || "Could not create user." },
+            { error: error.message || "Could not create user. Please contact me at zyh@ik.me" },
             { status: 500 }
         );
     }

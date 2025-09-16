@@ -19,8 +19,8 @@ export type FieldDef = {
 
 
 /**
- * CMSConfig：Stres all models that supported by CMS,
- * Make sure the key shall be first line of each model
+ * CMSConfig：Stores all models that supported by CMS,
+ * Make sure the key shall be FIRST line of each model
  */
 export const CMSConfig: Record<string, FieldDef[]> = {
     User: [
@@ -28,6 +28,21 @@ export const CMSConfig: Record<string, FieldDef[]> = {
         { name: 'name', type: 'string', label: 'User Name' },
         { name: 'email', type: 'string', label: 'Email' },
         { name: 'password', type: 'string', label: 'Password' },
+        { name: 'bio', type: 'string', label: 'Bio', isOptional: true },
+        {
+            name: 'avatar',
+            type: 'image-url',
+            label: 'Avatar Image',
+            isFile: true,
+            isOptional: true
+        },
+        {
+            name: 'status',
+            type: 'enum',
+            label: 'User Status',
+            enumOptions: ['active', 'contributor', 'pending', 'banned'],
+            isOptional: true
+        },
         { name: 'createdAt', type: 'datetime', label: 'Created At', isReadOnly: true },
     ],
     Place: [
@@ -49,7 +64,7 @@ export const CMSConfig: Record<string, FieldDef[]> = {
             name: 'image',
             type: 'image-url',
             label: 'Image',
-            isFile: true, // in forms: <input type="file" />
+            isFile: true, // in forms: activate <input type="file" />
             isOptional: true
         },
         {

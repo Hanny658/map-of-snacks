@@ -34,6 +34,9 @@ export async function PUT(req: Request, { params }: Params) {
         // Hash new password before saving
         updateData.password = await hash(data.password, 12);
     }
+    if (data.avatar) updateData.avatar = data.avatar;
+    if (data.bio) updateData.bio = data.bio;
+    if (data.status) updateData.status = data.status;
 
     try {
         const updated = await prisma.user.update({
