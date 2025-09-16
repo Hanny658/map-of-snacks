@@ -41,7 +41,10 @@ export default function MarkGoneButton({ cheapieId, onMarkedGone, currentStock }
 
     return (
         <button
-            onClick={handleMarkGone}
+            onClick={(e) => {
+                e.stopPropagation();
+                handleMarkGone();
+            }}
             disabled={loading}
             className="absolute right-4 mx-4 my-2 text-red-600/60 hover:text-red-800/60 disabled:opacity-50"
             title="Mark out of stock"

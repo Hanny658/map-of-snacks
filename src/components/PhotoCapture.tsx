@@ -15,7 +15,7 @@ export default function PhotoCapture({ size, onCapture, onCancel }: PhotoCapture
     const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
 
-    // Helper to start stream for given constraints
+    // Helper to start/stop stream for given constraints
     const startStream = async (deviceId?: string) => {
         if (stream) {
             stream.getTracks().forEach((t) => t.stop());
@@ -29,6 +29,12 @@ export default function PhotoCapture({ size, onCapture, onCancel }: PhotoCapture
             if (videoRef.current) videoRef.current.srcObject = s;
         } catch (err) {
             console.error('Error accessing camera', err);
+        }
+    };
+    const stopStream = () => {
+        if (stream) {
+            stream.getTracks().forEach((t) => t.stop());
+            setStream(null);
         }
     };
 
@@ -48,7 +54,7 @@ export default function PhotoCapture({ size, onCapture, onCancel }: PhotoCapture
         loadDevices();
 
         return () => {
-            stream?.getTracks().forEach((t) => t.stop());
+            stopStream();
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -105,7 +111,10 @@ export default function PhotoCapture({ size, onCapture, onCancel }: PhotoCapture
                         <i className="bi bi-repeat text-3xl"></i>
                     </button>
                     <button
-                        onClick={onCancel}
+                        onClick={() => {
+                            stopStream();
+                            onCancel();
+                        }}
                         className="flex-1 px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 transition"
                     >
                         <i className="bi bi-x-lg text-3xl"></i>

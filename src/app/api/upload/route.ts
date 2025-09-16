@@ -115,8 +115,8 @@ export async function POST(request: NextRequest) {
                     await writeFileAsync(filePath, finalBuffer)
 
                     if (generateThumb) {
-                        // Generate thumbnail - 64px wide in same format
-                        let thumbPipeline = sharp(finalBuffer).resize({ width: 64 })
+                        // Generate thumbnail - 128px wide in same format
+                        let thumbPipeline = sharp(finalBuffer).resize({ width: 128 })
                         if (originalExt === '.jpg' || originalExt === '.jpeg') {
                         thumbPipeline = thumbPipeline.jpeg({ quality: 80 })
                         } else if (originalExt === '.png') {

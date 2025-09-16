@@ -138,10 +138,16 @@ export default function RegLogModal() {
                         <i className="bi bi-person-fill"></i>&nbsp;{session.user?.name || "User"}
                     </button>
                     {dropdownOpen && (
-                        <div className="absolute left-0 mt-2 w-24 bg-white rounded shadow-lg z-50">
+                        <div className="absolute left-0 mt-1 min-w-28 bg-white rounded shadow-lg z-50">
+                            <button
+                                onClick={()=>{}}
+                                className="w-full text-left px-4 py-2 bg-sky-50 hover:bg-sky-100"
+                            >
+                                My Profile
+                            </button>
                             <button
                                 onClick={handleLogout}
-                                className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                                className="w-full text-left px-4 py-2 bg-red-50 hover:bg-red-100/80"
                             >
                                 Logout
                             </button>
