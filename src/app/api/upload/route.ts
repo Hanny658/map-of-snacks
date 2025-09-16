@@ -45,6 +45,8 @@ export async function POST(request: NextRequest) {
             let originalFilename: string = ''
             let fileTooLarge = false
 
+            let originalExt = path.extname(originalFilename).toLowerCase() || '.jpg'
+
             busboy.on(
                 'file',
                 (
@@ -90,6 +92,7 @@ export async function POST(request: NextRequest) {
                         finalBuffer = await sharp(fileBuffer)
                             .jpeg({ quality: 80 })
                             .toBuffer()
+                        originalExt = '.jpg' // now original not matter
                     }
 
                     // check dir: public/uploads
@@ -101,14 +104,35 @@ export async function POST(request: NextRequest) {
                     // generate the unique filename：timestamp-rand.ext
                     const timestamp = Date.now()
                     const randomStr = Math.random().toString(36).slice(2, 8)
-                    const ext = path.extname(originalFilename) || '.jpg'
-                    const filename = `${timestamp}-${randomStr}${ext}`
+                    const ext = originalExt || '.jpg'
+                    const baseName = `${timestamp}-${randomStr}`
+                    const filename = `${baseName}${ext}`
                     const filePath = path.join(uploadsDir, filename)
 
-                    // Finally write it to local
+                    // Finally write it to local (original + thumbnail)
                     await writeFileAsync(filePath, finalBuffer)
 
-                    // give the url back
+                    // Generate thumbnail - 64px wide in same format
+                    let thumbPipeline = sharp(finalBuffer).resize({ width: 64 })
+                    if (originalExt === '.jpg' || originalExt === '.jpeg') {
+                    thumbPipeline = thumbPipeline.jpeg({ quality: 80 })
+                    } else if (originalExt === '.png') {
+                    thumbPipeline = thumbPipeline.png({ compressionLevel: 8 })
+                    } else if (originalExt === '.webp') {
+                    thumbPipeline = thumbPipeline.webp({ quality: 80 })
+                    }else if (originalExt === '.avif') {
+                    thumbPipeline = thumbPipeline.avif({ quality: 80 })
+                    }else if (originalExt === '.gif') {
+                    thumbPipeline = thumbPipeline.gif()
+                    }
+                    const thumbBuffer = await thumbPipeline.toBuffer()
+
+                    // Strictly "-tn" suffix before extension
+                    const thumbFilename = `${baseName}-tn${originalExt}`
+                    const thumbPath = path.join(uploadsDir, thumbFilename)
+                    await writeFileAsync(thumbPath, thumbBuffer)
+
+                    // Only return the *main URL* (thumbnail can be derived)
                     const publicUrl = `/uploads/${filename}`
                     return resolve(NextResponse.json({ url: publicUrl }))
                 } catch (err) {

@@ -34,8 +34,27 @@ export async function DELETE() {
     })
     // TODO: keep add other models with file fields as needed
 
-    // Determine unlinked files
-    const unlinked = files.filter(f => !referenced.has(f))
+    // Determine unlinked files (including thumbnails)
+    const unlinked: string[] = []
+
+    for (const f of files) {
+        // Check if this file is referenced directly
+        if (referenced.has(f)) continue
+
+        // Check if this file is a thumbnail of a referenced file
+        const dotIndex = f.lastIndexOf('.')
+        if (dotIndex !== -1) {
+            const base = f.slice(0, dotIndex)
+            const ext = f.slice(dotIndex)
+            if (base.endsWith('-tn')) {
+                const originalName = base.slice(0, -3) + ext // remove "-tn"
+                if (referenced.has(originalName)) continue
+            }
+        }
+
+        // If neither the file nor its original is referenced → mark unlinked
+        unlinked.push(f)
+    }
 
     // Remove them
     let removedCount = 0
