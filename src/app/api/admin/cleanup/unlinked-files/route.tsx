@@ -14,7 +14,8 @@ export async function DELETE() {
         return NextResponse.json({ removed: 0 }, { status: 500 })
     }
 
-    // Collect all referenced filenames from models
+    // Collect ALL referenced filenames from models (Such an expensive operation!)
+    // 1. Cheapies > Image
     const cheapies = await prisma.cheapie.findMany({ select: { image: true } })
     const referenced = new Set<string>()
     cheapies.forEach(c => {
@@ -23,7 +24,15 @@ export async function DELETE() {
             referenced.add(filename)
         }
     })
-    // TODO: add other models with file fields as needed
+    // 2. User > Avatar
+    const users = await prisma.user.findMany({ select: { avatar: true } })
+    users.forEach(u => {
+        if (u.avatar) {
+            const filename = path.basename(u.avatar)
+            referenced.add(filename)
+        }
+    })
+    // TODO: keep add other models with file fields as needed
 
     // Determine unlinked files
     const unlinked = files.filter(f => !referenced.has(f))
