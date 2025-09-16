@@ -51,7 +51,7 @@ export default function AddCheapieModal({ placeId, onClose, onCreated }: AddChea
         setIsUploading(true)
         const form = new FormData()
         form.append('file', file)
-        const res = await fetch('/api/upload', { method: 'POST', body: form })
+        const res = await fetch('/api/upload?thumb=false', { method: 'POST', body: form })
         if (res.ok) {
             const data = await res.json()
             setImageUrl(data.url)

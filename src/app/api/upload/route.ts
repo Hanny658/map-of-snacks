@@ -24,6 +24,8 @@ export const runtime = 'nodejs'
 export async function POST(request: NextRequest) {
     // turn NextRequest.headers to a universal object
     const headers = Object.fromEntries(request.headers.entries())
+    const { searchParams } = new URL(request.url)
+    const generateThumb = searchParams.get('thumb') !== 'false'
 
     // import Busboy dynamically for ESM runtime
     let BusboyFactory: any
@@ -112,25 +114,27 @@ export async function POST(request: NextRequest) {
                     // Finally write it to local (original + thumbnail)
                     await writeFileAsync(filePath, finalBuffer)
 
-                    // Generate thumbnail - 64px wide in same format
-                    let thumbPipeline = sharp(finalBuffer).resize({ width: 64 })
-                    if (originalExt === '.jpg' || originalExt === '.jpeg') {
-                    thumbPipeline = thumbPipeline.jpeg({ quality: 80 })
-                    } else if (originalExt === '.png') {
-                    thumbPipeline = thumbPipeline.png({ compressionLevel: 8 })
-                    } else if (originalExt === '.webp') {
-                    thumbPipeline = thumbPipeline.webp({ quality: 80 })
-                    }else if (originalExt === '.avif') {
-                    thumbPipeline = thumbPipeline.avif({ quality: 80 })
-                    }else if (originalExt === '.gif') {
-                    thumbPipeline = thumbPipeline.gif()
-                    }
-                    const thumbBuffer = await thumbPipeline.toBuffer()
+                    if (generateThumb) {
+                        // Generate thumbnail - 64px wide in same format
+                        let thumbPipeline = sharp(finalBuffer).resize({ width: 64 })
+                        if (originalExt === '.jpg' || originalExt === '.jpeg') {
+                        thumbPipeline = thumbPipeline.jpeg({ quality: 80 })
+                        } else if (originalExt === '.png') {
+                        thumbPipeline = thumbPipeline.png({ compressionLevel: 8 })
+                        } else if (originalExt === '.webp') {
+                        thumbPipeline = thumbPipeline.webp({ quality: 80 })
+                        }else if (originalExt === '.avif') {
+                        thumbPipeline = thumbPipeline.avif({ quality: 80 })
+                        }else if (originalExt === '.gif') {
+                        thumbPipeline = thumbPipeline.gif()
+                        }
+                        const thumbBuffer = await thumbPipeline.toBuffer()
 
-                    // Strictly "-tn" suffix before extension
-                    const thumbFilename = `${baseName}-tn${originalExt}`
-                    const thumbPath = path.join(uploadsDir, thumbFilename)
-                    await writeFileAsync(thumbPath, thumbBuffer)
+                        // Strictly "-tn" suffix before extension
+                        const thumbFilename = `${baseName}-tn${originalExt}`
+                        const thumbPath = path.join(uploadsDir, thumbFilename)
+                        await writeFileAsync(thumbPath, thumbBuffer)
+                    }
 
                     // Only return the *main URL* (thumbnail can be derived)
                     const publicUrl = `/uploads/${filename}`
