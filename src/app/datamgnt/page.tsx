@@ -7,6 +7,7 @@ import DetailModal from 'src/components/DetailModal'
 import { CMSConfig } from 'src/cmsConfig'
 import LoginGate from 'src/components/LoginGate'
 import AdminActions from 'src/components/AdminActions'
+import Image from 'next/image'
 
 type ModelName = keyof typeof CMSConfig
 type Entry = Record<string, any>
@@ -109,8 +110,6 @@ export default function CMSPage() {
     )
     setSelectedEntry(updated)
   }
-
-
 
   return (
     <>  {!authenticated ? (
@@ -243,6 +242,14 @@ export default function CMSPage() {
                           }
                         }}
                       />
+                      {formData[field.name] &&
+                      <Image
+                        width={200}
+                        height={200}
+                        src={String(formData[field.name])}
+                        alt="Seems like the picture is out for a trip..."
+                        className="max-h-40 mt-0.5 rounded"
+                      />}
                     </div>
                   )
                 }

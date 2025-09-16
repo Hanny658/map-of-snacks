@@ -26,7 +26,9 @@ export default function DetailModal({
 }: DetailModalProps) {
     const fields = CMSConfig[model]
     const [isEditing, setIsEditing] = useState(false)
+    const [isSubmitting, setIsSubmitting] = useState(false)
     const [formData, setFormData] = useState<Record<string, any>>({})
+    const [uploadingField, setUploadingField] = useState<string | null>(null);
 
     // form initialisation
     useEffect(() => {
@@ -62,63 +64,72 @@ export default function DetailModal({
     }
 
     // image uploading
-    const handleImageUpload = async (file: File) => {
-        const form = new FormData()
-        form.append('file', file)
-        const res = await fetch('/api/upload', {
-            method: 'POST',
-            body: form,
-        })
-        if (res.ok) {
-            const data = (await res.json()) as { url: string }
-            handleInputChange('image', data.url)
-        } else {
-            const err = await res.json()
-            alert('图片上传失败: ' + err.error)
+    const handleImageUpload = async (file: File, fieldName: string) => {
+        setUploadingField(fieldName)
+        try {
+            const form = new FormData()
+            form.append('file', file)
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                body: form,
+            })
+            if (res.ok) {
+                const data = (await res.json()) as { url: string }
+                handleInputChange(fieldName, data.url)
+            } else {
+                const err = await res.json()
+                alert('图片上传失败: ' + err.error)
+            }
+        } finally {
+            setUploadingField(null)
         }
     }
 
     // submit update
     const handleUpdate = async () => {
+        setIsSubmitting(true)
         // check nessesary fiels (escape img-url)
         const missing = fields.some(
-        f =>
-            !f.isReadOnly &&
-            !f.isOptional &&
-            f.type !== 'image-url' &&
-            (formData[f.name] === '' || formData[f.name] == null)
+            f =>
+                !f.isReadOnly &&
+                !f.isOptional &&
+                f.type !== 'image-url' &&
+                (formData[f.name] === '' || formData[f.name] == null)
         )
         if (missing) {
+            setIsSubmitting(false)
             alert('请填写所有必填字段')
             return
         }
 
-        const pk = fields[0].name
-        const idOrKey = entry[pk]
-        const endpoint =
-            typeof idOrKey === 'number'
-                ? `/api/${model.toLowerCase()}/${idOrKey}`
-                : `/api/${model.toLowerCase()}/${encodeURIComponent(idOrKey)}`
+        try {
+            const pk = fields[0].name
+            const idOrKey = entry[pk]
+            const endpoint =
+                typeof idOrKey === 'number'
+                    ? `/api/${model.toLowerCase()}/${idOrKey}`
+                    : `/api/${model.toLowerCase()}/${encodeURIComponent(idOrKey)}`
 
-        // Update payload, which ignores key
-        const payload: Record<string, any> = {}
-        fields.forEach((field) => {
-            if (field.name === pk) return
-            payload[field.name] = formData[field.name]
-        })
+            // Update payload, which ignores key
+            const payload: Record<string, any> = {}
+            fields.forEach((field) => {
+                if (field.name === pk) return
+                payload[field.name] = formData[field.name]
+            })
 
-        const res = await fetch(endpoint, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-        })
-        if (res.ok) {
-            const updated = (await res.json()) as Entry
-            setIsEditing(false)
-            onUpdated(updated)
-        } else {
-            alert('Failed to update...')
-        }
+            const res = await fetch(endpoint, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            })
+            if (res.ok) {
+                const updated = (await res.json()) as Entry
+                setIsEditing(false)
+                onUpdated(updated)
+            } else {
+                alert('Failed to update...')
+            }
+        } finally { setIsSubmitting(false) }
     }
 
     return (
@@ -206,52 +217,53 @@ export default function DetailModal({
                                         </div>
                                     )
                                 }
-                                if (field.isReadOnly) { 
+                                if (field.isReadOnly) {
                                     // For read-onlys, display a non-editable input field
                                     return (
-                                    <div key={field.name} className="mb-4">
-                                        <label className="block mb-1 font-medium">
-                                        {field.label ?? field.name} (read-only)
-                                        </label>
-                                        <input
-                                        type={field.type === 'datetime' ? 'date' : 'text'}
-                                        readOnly
-                                        value={formData[field.name] ?? ''}
-                                        className="w-full px-3 py-2 border rounded-lg bg-gray-100 cursor-not-allowed"
-                                        />
-                                    </div>
+                                        <div key={field.name} className="mb-4">
+                                            <label className="block mb-1 font-medium">
+                                                {field.label ?? field.name} (read-only)
+                                            </label>
+                                            <input
+                                                type={field.type === 'datetime' ? 'date' : 'text'}
+                                                readOnly
+                                                value={formData[field.name] ?? ''}
+                                                className="w-full px-3 py-2 border rounded-lg bg-gray-100 cursor-not-allowed"
+                                            />
+                                        </div>
                                     )
                                 }
                                 if (field.type === 'enum' && field.enumOptions) {
                                     // For Enums display input as selections instead of text area
                                     return (
-                                    <div key={field.name} className="mb-4">
-                                        <label className="block mb-1 font-medium">
-                                        {field.label ?? field.name} ({field.type})
-                                        </label>
-                                        <select
-                                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
-                                        value={formData[field.name] ?? field.enumOptions[0]}
-                                        onChange={(e) =>
-                                            handleInputChange(field.name, e.target.value)
-                                        }
-                                        >
-                                        {field.enumOptions.map((opt) => (
-                                            <option key={opt} value={opt}>
-                                            {opt}
-                                            </option>
-                                        ))}
-                                        </select>
-                                    </div>
+                                        <div key={field.name} className="mb-4">
+                                            <label className="block mb-1 font-medium">
+                                                {field.label ?? field.name} ({field.type})
+                                            </label>
+                                            <select
+                                                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
+                                                value={formData[field.name] ?? field.enumOptions[0]}
+                                                onChange={(e) =>
+                                                    handleInputChange(field.name, e.target.value)
+                                                }
+                                            >
+                                                {field.enumOptions.map((opt) => (
+                                                    <option key={opt} value={opt}>
+                                                        {opt}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
                                     )
                                 }
                                 // img upload
-                                if (field.type === 'image-url' && field.isFile) {
+                                if (field.type === "image-url" && field.isFile) {
                                     return (
                                         <div key={key} className="mb-4">
                                             <label className="block mb-1 font-medium">
                                                 {field.label ?? key} (上传图片)
                                             </label>
+
                                             {formData[key] && (
                                                 <div className="mb-2">
                                                     <Image
@@ -263,18 +275,45 @@ export default function DetailModal({
                                                     />
                                                 </div>
                                             )}
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                onChange={(e) => {
-                                                    const file = e.target.files?.[0]
-                                                    if (file) {
-                                                        handleImageUpload(file)
-                                                    }
-                                                }}
-                                            />
+
+                                            {uploadingField === key ? (
+                                                <div className="flex items-center gap-2 text-blue-600">
+                                                    <svg
+                                                        className="animate-spin h-5 w-5 text-blue-600"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <circle
+                                                            className="opacity-25"
+                                                            cx="12"
+                                                            cy="12"
+                                                            r="10"
+                                                            stroke="currentColor"
+                                                            strokeWidth="4"
+                                                        ></circle>
+                                                        <path
+                                                            className="opacity-75"
+                                                            fill="currentColor"
+                                                            d="M4 12a8 8 0 018-8v8H4z"
+                                                        ></path>
+                                                    </svg>
+                                                    Uploading...
+                                                </div>
+                                            ) : (
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={(e) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (file) {
+                                                            handleImageUpload(file, key);
+                                                        }
+                                                    }}
+                                                />
+                                            )}
                                         </div>
-                                    )
+                                    );
                                 }
 
                                 // text fields
@@ -317,9 +356,10 @@ export default function DetailModal({
                             </button>
                             <button
                                 onClick={handleUpdate}
-                                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                                disabled={isSubmitting}
+                                className={`px-4 py-2 ${isSubmitting ? "bg-green-800" : "bg-green-600"} text-white rounded-lg hover:bg-green-700 transition`}
                             >
-                                Submit
+                                {isSubmitting ? "Updating.." : "Submit"}
                             </button>
                         </div>
                     </>
