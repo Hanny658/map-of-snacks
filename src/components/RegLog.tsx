@@ -1,33 +1,112 @@
 // components/RegLog.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
+
 
 export default function RegLogModal() {
     const { data: session } = useSession();
     const [isOpen, setIsOpen] = useState(false);
-    const [mode, /*setMode*/] = useState<"login" | "register">("login");
+    const [mode, setMode] = useState<"login" | "register">("login");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [username, setUsername] = useState("");
-    const [error, setError] = useState<string | null>(null);
     const [dropdownOpen, setDropdownOpen] = useState(false);
-
     const [showPwd, setShowPwd] = useState(false);
+    const [userOtp, setUserOtp] = useState("");
+    const [otp, setOtp] = useState<string | null>(null);
+    const [otpExpiry, setOtpExpiry] = useState<number | null>(null);
+    const [otpCooldown, setOtpCooldown] = useState(0);
+    const [message, setMessage] = useState<{ text: string; type: "success" | "error" | null }>({ text: "", type: null });
+    const [loading, setLoading] = useState(false);
+
+    // Cooldown timer
+    useEffect(() => {
+        if (otpCooldown > 0) {
+        const timer = setInterval(() => {
+            setOtpCooldown((prev) => (prev > 0 ? prev - 1 : 0));
+        }, 1000);
+        return () => clearInterval(timer);
+        }
+    }, [otpCooldown]);
+
+    // Generate random 7-digit OTP
+    const generateOtp = () => Math.floor(1000000 + Math.random() * 9000000).toString();
+
+    const handleSendOtp = async () => {
+        if (!email || !/\S+@\S+\.\S+/.test(email)) {
+            setMessage({ text: "Please enter a valid email address.", type: "error" });
+            setOtpCooldown(5); // short cooldown
+            return;
+        }
+
+        const newOtp = generateOtp();
+        setOtp(newOtp);
+        setOtpExpiry(Date.now() + 7 * 60 * 1000);
+        setLoading(true);
+        setMessage({ text: "", type: null });
+
+        try {
+            const res = await fetch("/api/auth/email-otp", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email, otp: newOtp }),
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                setMessage({ text: data.message || "OTP sent successfully.", type: "success" });
+                setOtpCooldown(60); // 60s cooldown
+            } else {
+                setMessage({ text: data.message || "Failed to send OTP.", type: "error" });
+                setOtpCooldown(5);
+            }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (err: any) {
+            setMessage({ text: err.message ? err.message :"Network error. Please try again.", type: "error" });
+            setOtpCooldown(5);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError(null);
+        setMessage({ text: "", type: null });
+        // Check OTP matching
+        if (mode === "register") {
+            // Check OTP presence
+            if (!otp) {
+                setMessage({ text: "Please verify your email with an OTP before registering.", type: "error" });
+                return;
+            }
+
+            // Check expiry
+            if (otpExpiry && Date.now() > otpExpiry) {
+                setMessage({ text: "Your OTP has expired. Please request a new one.", type: "error" });
+                return;
+            }
+
+            // Check user input
+            if (userOtp !== otp) {
+                setMessage({ text: "Invalid OTP. Please try again.", type: "error" });
+                return;
+            }
+        }
+        // Passed -> actual register
         const res = await signIn("credentials", {
             redirect: false,
             mode,
             email,
             password,
-            ...(mode === "register" && { username }), // TODO: Alternative username login
+            ...(mode === "register" && { username }),
         });
         if (res?.error) {
-            setError(res.error);
+            setMessage({ text: res.error, type: "error" });
         } else {
             window.location.reload();
         }
@@ -93,6 +172,20 @@ export default function RegLogModal() {
                     </h2>
 
                     <form onSubmit={handleAuth} className="space-y-4">
+                        {mode === "register" && (
+                            <div>
+                                <label className="block text-sm mb-1">Username</label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={username}
+                                    maxLength={32}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                                <div className="w-full text-sm text-gray-500 text-right">Choose your unique nickname~ (no more than 32 charactors)</div>
+                            </div>
+                        )}
                         <div>
                             <label className="block text-sm mb-1">Email</label>
                             <input
@@ -123,21 +216,57 @@ export default function RegLogModal() {
                         </div>
 
                         {mode === "register" && (
-                            <div>
-                                <label className="block text-sm mb-1">Username</label>
-                                <input
-                                    type="text"
-                                    required
-                                    value={username}
-                                    maxLength={32}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                    className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                                <div className="w-full text-sm text-gray-500 text-right">Choose your favorite nickname in 32 charactors~</div>
+                            <div className="mb-6">
+                                <label className="block mb-2 text-sm">Verification Code</label>
+                                <div className="flex w-full">
+                                    <input
+                                        type="text"
+                                        className="flex-grow border border-gray-300 px-3 py-2 rounded-l focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="Enter the OTP"
+                                        value={userOtp}
+                                        onChange={(e) => setUserOtp(e.target.value)}
+                                        disabled={loading}
+                                    />
+                                    <button
+                                        onClick={handleSendOtp}
+                                        disabled={loading || otpCooldown > 0}
+                                        className="bg-blue-600 text-white px-4 py-2 rounded-r disabled:opacity-50 whitespace-nowrap"
+                                    >
+                                        {loading ? (
+                                            <svg
+                                                className="animate-spin h-5 w-5 text-white"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <circle
+                                                    className="opacity-25"
+                                                    cx="12"
+                                                    cy="12"
+                                                    r="10"
+                                                    stroke="currentColor"
+                                                    strokeWidth="4"
+                                                ></circle>
+                                                <path
+                                                    className="opacity-75"
+                                                    fill="currentColor"
+                                                    d="M4 12a8 8 0 018-8v8H4z"
+                                                ></path>
+                                            </svg>
+                                        ) : otpCooldown > 0 ? `Wait ${otpCooldown}s` : "Send"}
+                                    </button>
+                                </div>
                             </div>
                         )}
-
-                        {error && <p className="text-red-500 text-sm">{error}</p>}
+                        
+                        {message.text && (
+                            <p
+                                className={`mt-2 text-sm ${message.type === "success" ? "text-green-600" : "text-red-600"
+                                    }`}
+                            >
+                                {message.text}
+                            </p>
+                        )}
 
                         <button
                             type="submit"
@@ -148,8 +277,8 @@ export default function RegLogModal() {
                     </form>
 
                     <p className="mt-4 text-center text-sm">
-                        <b className="text-gray-500">Register will be available after Close Beta</b>
-                        {/* {mode === "login"
+                        {/* <b className="text-gray-500">Register will be available after Close Beta</b> */}
+                        {mode === "login"
                             ? "Don't have an account?"
                             : "Already have an account?"}{" "}
                         <button
@@ -157,7 +286,7 @@ export default function RegLogModal() {
                             className="text-blue-600 hover:underline"
                         >
                             {mode === "login" ? "Register" : "Login"}
-                        </button> */}
+                        </button>
                     </p>
                 </div>
             </div>
