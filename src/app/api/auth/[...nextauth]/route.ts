@@ -60,10 +60,20 @@ const authOptions: AuthOptions = {
         }),
     ],
     callbacks: {
-        // Inject user id into jwt
+        // Inject user id and name into jwt
         async jwt({ token, user }) {
             if (user) {
                 token.id = user.id;
+                token.name = user.name;
+            }
+            // Always sync from DB when session is refreshed
+            const dbUser = await prisma.user.findUnique({
+                where: { id: token.id as string },
+                select: { name: true, email: true },
+            });
+            if (dbUser) {
+                token.name = dbUser.name;
+                token.email = dbUser.email;
             }
             return token;
         },
@@ -73,6 +83,7 @@ const authOptions: AuthOptions = {
                 session.user = {
                     ...session.user!,
                     id: token.id as string,
+                    name: token.name as string,
                 };
             }
             return session;

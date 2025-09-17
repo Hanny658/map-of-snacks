@@ -4,6 +4,7 @@
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import AvatarCircle from "./AvartarCircle";
+import { useSession } from "next-auth/react";
 
 type User = {
     id: string;
@@ -24,6 +25,7 @@ export default function UserProfileModal({
     const [editing, setEditing] = useState<{ field: "name" | "bio" | null }>({
         field: null,
     });
+    const [original, setOriginal] = useState<string | null>("");
     const [draft, setDraft] = useState<string>("");
     const [pwVisible, setPwVisible] = useState({
         old: false,
@@ -35,6 +37,9 @@ export default function UserProfileModal({
         new: "",
         confirm: "",
     });
+    const [startPwdReset, setStartPwdReset] = useState<boolean>(false);
+
+    const { update } = useSession();
 
     useEffect(() => {
         if (userId === undefined) return;
@@ -48,7 +53,12 @@ export default function UserProfileModal({
     }, [userId]);
 
     async function saveField(field: "name" | "bio") {
-        if (!draft.trim() && field === "name") return;
+        if (!draft.trim() && field === "name") return;      // empty name
+        if (draft.length > 32 && field === "name") return;  // name too long
+        if (draft == original) {                            // not editing
+            setEditing({field :null})
+            return;
+        }
         const res = await fetch(`/api/user/${userId}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -57,6 +67,7 @@ export default function UserProfileModal({
         if (res.ok) {
             const updated = await res.json();
             setUser(updated);
+            await update(); // forces next-auth to call callbacks again
             setEditing({ field: null });
             setDraft("");
         }
@@ -116,6 +127,7 @@ export default function UserProfileModal({
                         <>
                             <input
                                 value={draft}
+                                maxLength={32}
                                 onChange={(e) => setDraft(e.target.value)}
                                 className="border px-2 py-1 rounded w-full mr-2"
                             />
@@ -128,6 +140,7 @@ export default function UserProfileModal({
                             <h2 className="text-xl font-semibold">{user.name}</h2>
                             <button
                                 onClick={() => {
+                                    setOriginal(user.name);
                                     setEditing({ field: "name" });
                                     setDraft(user.name || "");
                                 }}
@@ -137,7 +150,7 @@ export default function UserProfileModal({
                         </>
                     )}
                 </div>
-                
+
                 {/* Email */}
                 <p className="mb-2 text-sm text-gray-500">📧 {user.email}</p>
 
@@ -159,6 +172,7 @@ export default function UserProfileModal({
                             <p className="text-gray-700">{user.bio || "No bio yet"}</p>
                             <button
                                 onClick={() => {
+                                    setOriginal(user.bio);
                                     setEditing({ field: "bio" });
                                     setDraft(user.bio || "");
                                 }}
@@ -170,50 +184,65 @@ export default function UserProfileModal({
                 </div>
 
                 {/* Password update */}
-                <div className="mt-6 space-y-2">
-                    {["old", "new", "confirm"].map((field) => (
-                        <div key={field} className="relative">
-                            <input
-                                type={pwVisible[field as keyof typeof pwVisible] ? "text" : "password"}
-                                placeholder={
-                                    field === "old"
-                                        ? "Old password"
-                                        : field === "new"
-                                            ? "New password"
-                                            : "Confirm new password"
-                                }
-                                className="w-full border px-3 py-2 rounded"
-                                value={passwords[field as keyof typeof passwords]}
-                                onChange={(e) =>
-                                    setPasswords({ ...passwords, [field]: e.target.value })
-                                }
-                            />
-                            <button
-                                type="button"
-                                className="absolute right-3 top-2.5 text-gray-500"
-                                onClick={() =>
-                                    setPwVisible({
-                                        ...pwVisible,
-                                        [field]: !pwVisible[field as keyof typeof pwVisible],
-                                    })
-                                }
-                            >
-                                <i
-                                    className={`bi ${pwVisible[field as keyof typeof pwVisible]
+                {startPwdReset ?
+                    <div className="mt-6 space-y-2">
+                        {["old", "new", "confirm"].map((field) => (
+                            <div key={field} className="relative">
+                                <input
+                                    type={pwVisible[field as keyof typeof pwVisible] ? "text" : "password"}
+                                    placeholder={
+                                        field === "old"
+                                            ? "Old password"
+                                            : field === "new"
+                                                ? "New password"
+                                                : "Confirm new password"
+                                    }
+                                    className="w-full border px-3 py-2 rounded"
+                                    value={passwords[field as keyof typeof passwords]}
+                                    onChange={(e) =>
+                                        setPasswords({ ...passwords, [field]: e.target.value })
+                                    }
+                                />
+                                <button
+                                    type="button"
+                                    className="absolute right-3 top-2.5 text-gray-500"
+                                    onClick={() =>
+                                        setPwVisible({
+                                            ...pwVisible,
+                                            [field]: !pwVisible[field as keyof typeof pwVisible],
+                                        })
+                                    }
+                                >
+                                    <i
+                                        className={`bi ${pwVisible[field as keyof typeof pwVisible]
                                             ? "bi-eye-slash"
                                             : "bi-eye"
-                                        }`}
-                                ></i>
-                            </button>
-                        </div>
-                    ))}
+                                            }`}
+                                    ></i>
+                                </button>
+                            </div>
+                        ))}
+                        <button
+                            className="w-1/2 mt-6 bg-gray-500 hover:bg-gray-600 text-white py-2 rounded-l"
+                            onClick={()=>setStartPwdReset(false)}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            className="w-1/2 bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-r"
+                            onClick={updatePassword}
+                        >
+                            Update Password
+                        </button>
+                    </div>
+                    :
                     <button
-                        className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded"
-                        onClick={updatePassword}
+                        className="w-full mt-6 bg-orange-500 hover:bg-orange-600 text-white py-2 rounded"
+                        onClick={()=>setStartPwdReset(true)}
                     >
-                        Update Password
+                        Change Password
                     </button>
-                </div>
+                }
             </div>
         </div>,
         document.body
