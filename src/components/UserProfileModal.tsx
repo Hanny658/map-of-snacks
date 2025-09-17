@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import AvatarCircle from "./AvartarCircle";
 import { useSession } from "next-auth/react";
+import AvatarCropper from "./AvatarCropper";
 
 type User = {
     id: string;
@@ -40,6 +41,7 @@ export default function UserProfileModal({
     const [startPwdReset, setStartPwdReset] = useState<boolean>(false);
     const [pwdErr, setPwdErr] = useState<string>("");
     const [pwdSuc, setPwdSuc] = useState<boolean>(false);
+    const [cropSrc, setCropSrc] = useState<string | null>(null);
 
     const { update } = useSession();
 
@@ -72,6 +74,29 @@ export default function UserProfileModal({
             await update(); // forces next-auth to call callbacks again
             setEditing({ field: null });
             setDraft("");
+        }
+    }
+
+    async function handleAvatarUpload(blob: Blob) {
+        const formData = new FormData();
+        formData.append("file", blob, "avatar.jpg");
+
+        const uploadRes = await fetch("/api/upload", {
+            method: "POST",
+            body: formData,
+        });
+
+        if (uploadRes.ok) {
+            const { url } = await uploadRes.json();
+            // Update user profile with avatar
+            await fetch(`/api/user/${userId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ avatar: url }),
+            });
+
+            setUser((prev) => (prev ? { ...prev, avatar: url } : prev));
+            setCropSrc(null);
         }
     }
 
@@ -124,7 +149,18 @@ export default function UserProfileModal({
                     <AvatarCircle imgLink={user.avatar} size={200} thumb={false} />
                     <button
                         className="absolute bottom-1 right-1 bg-white rounded-full p-2 shadow hover:bg-gray-100"
-                        onClick={() => alert("TODO: open file picker & crop editor after implementation. I wanna rest for now~")}
+                        onClick={() => {
+                            const input = document.createElement("input");
+                            input.type = "file";
+                            input.accept = "image/*";
+                            input.onchange = (e) => {
+                                const file = (e.target as HTMLInputElement).files?.[0];
+                                if (file) {
+                                    setCropSrc(URL.createObjectURL(file));
+                                }
+                            };
+                            input.click();
+                        }}
                     >
                         <i className="bi bi-camera-fill text-gray-700"></i>
                     </button>
@@ -258,6 +294,14 @@ export default function UserProfileModal({
                 }
                 {pwdSuc && <p className="text-sm text-green-600/80 text-right">Congrats~ Your password just updated!</p>}
             </div>
+            {/* Cropper overlay */}
+            {cropSrc && (
+                <AvatarCropper
+                    imageSrc={cropSrc}
+                    onCancel={() => setCropSrc(null)}
+                    onCropComplete={handleAvatarUpload}
+                />
+            )}
         </div>,
         document.body
     );

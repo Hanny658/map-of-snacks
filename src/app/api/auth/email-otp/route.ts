@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
             <div style="font-family: Arial, sans-serif; max-width: 480px; margin:auto; padding:20px; border:1px solid #eaeaea; border-radius:8px; background:#f9f9f9;">
                 <h2 style="text-align:center; color:#333;">🔐 Email Verification</h2>
                 <p style="font-size:16px; color:#555;">
-                Please use the following One-Time Password (OTP) to verify your email address:
+                Thank you for visiting my snack site! Please use the following One-Time Password (OTP) to verify your email address:
                 </p>
 
                 <div style="text-align:center; margin:24px 0;">
