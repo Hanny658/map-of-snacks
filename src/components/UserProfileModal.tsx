@@ -38,6 +38,8 @@ export default function UserProfileModal({
         confirm: "",
     });
     const [startPwdReset, setStartPwdReset] = useState<boolean>(false);
+    const [pwdErr, setPwdErr] = useState<string>("");
+    const [pwdSuc, setPwdSuc] = useState<boolean>(false);
 
     const { update } = useSession();
 
@@ -74,20 +76,27 @@ export default function UserProfileModal({
     }
 
     async function updatePassword() {
+        setPwdErr("");
         if (passwords.new !== passwords.confirm) {
-            alert("New password and confirm password do not match");
+            setPwdErr("New password and confirm password do not match");
             return;
         }
-        const res = await fetch(`/api/user/${userId}`, {
+        if (passwords.new === passwords.old) {
+            setPwdErr("Entered old password and new password are the same");
+            return;
+        }
+        const res = await fetch(`/api/user/${userId}/pwd-update`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ password: passwords.new }),
+            body: JSON.stringify({ oldPassword: passwords.old, newPassword: passwords.new }),
         });
         if (res.ok) {
-            alert("Password updated");
+            setPwdSuc(true);
+            setStartPwdReset(false);
             setPasswords({ old: "", new: "", confirm: "" });
         } else {
-            alert("Failed to update password");
+            const resData = await res.json();
+            setPwdErr(resData?.error);
         }
     }
 
@@ -222,6 +231,7 @@ export default function UserProfileModal({
                                 </button>
                             </div>
                         ))}
+                        {pwdErr && <p className="text-red-700/80 text-sm text-right">{pwdErr}</p>}
                         <button
                             className="w-1/2 mt-6 bg-gray-500 hover:bg-gray-600 text-white py-2 rounded-l"
                             onClick={()=>setStartPwdReset(false)}
@@ -238,11 +248,15 @@ export default function UserProfileModal({
                     :
                     <button
                         className="w-full mt-6 bg-orange-500 hover:bg-orange-600 text-white py-2 rounded"
-                        onClick={()=>setStartPwdReset(true)}
+                        onClick={()=> {
+                            setPwdSuc(false);
+                            setStartPwdReset(true);
+                        }}
                     >
                         Change Password
                     </button>
                 }
+                {pwdSuc && <p className="text-sm text-green-600/80 text-right">Congrats~ Your password just updated!</p>}
             </div>
         </div>,
         document.body
