@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
+import AvatarCircle from "./AvartarCircle";
 
 
 export default function RegLogModal() {
@@ -20,6 +21,30 @@ export default function RegLogModal() {
     const [otpCooldown, setOtpCooldown] = useState(0);
     const [message, setMessage] = useState<{ text: string; type: "success" | "error" | null }>({ text: "", type: null });
     const [loading, setLoading] = useState(false);
+    const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (!session?.user?.id) return;
+        const fetchUser = async () => {
+            try {
+                const res = await fetch(`/api/user/${session?.user?.id}`);
+                if (!res.ok) throw new Error("Failed to fetch user");
+
+                const user = await res.json();
+
+                if (!user?.avatar || user.avatar.trim() === "") {
+                    setAvatarUrl("/avatar_default-tn.jpg");
+                } else {
+                    setAvatarUrl(user.avatar);
+                }
+            } catch (err) {
+                console.error("Error fetching avatar:", err);
+                setAvatarUrl("/avatar_default-tn.jpg");
+            }
+        };
+
+        fetchUser();
+    }, [session?.user?.id]);
 
     // Cooldown timer
     useEffect(() => {
@@ -30,6 +55,42 @@ export default function RegLogModal() {
         return () => clearInterval(timer);
         }
     }, [otpCooldown]);
+
+    // Helper function to get user avatar / notfound -> default
+    // const getAvatarPic = async (userId: string, thumb: boolean = false): Promise<string | null> => {
+    //     try {
+    //         const res = await fetch(`/api/user/${userId}`, { method: "GET" });
+    //         if (!res.ok) throw new Error("Failed to fetch user");
+
+    //         const user = await res.json();
+
+    //         // If avatar is missing or empty string, return null
+    //         if (!user?.avatar || user.avatar.trim() === "") {
+    //             if (thumb) return "/avatar_default-tn.jpg";
+    //             return "/avatar_default.jpg";
+    //         }
+
+    //         let avatarUrl = user.avatar;
+
+    //         if (thumb) {
+    //             // Insert "-tn" before the file extension for thumbnail pic
+    //             const lastDotIndex = avatarUrl.lastIndexOf(".");
+    //             if (lastDotIndex !== -1) {
+    //                 avatarUrl =
+    //                     avatarUrl.slice(0, lastDotIndex) +
+    //                     "-tn" + avatarUrl.slice(lastDotIndex);
+    //             } else {
+    //                 // No extension found, just append -tn
+    //                 avatarUrl += "-tn";
+    //             }
+    //         }
+
+    //         return avatarUrl;
+    //     } catch (err) {
+    //         console.error("Error fetching avatar:", err);
+    //         return null;
+    //     }
+    // };
 
     // Generate random 7-digit OTP
     const generateOtp = () => Math.floor(1000000 + Math.random() * 9000000).toString();
@@ -133,9 +194,10 @@ export default function RegLogModal() {
                 <div className="relative inline-block">
                     <button
                         onClick={() => setDropdownOpen(!dropdownOpen)}
-                        className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition"
+                        className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition"
                     >
-                        <i className="bi bi-person-fill"></i>&nbsp;{session.user?.name || "User"}
+                        <AvatarCircle imgLink={avatarUrl} />
+                        <span className="whitespace-nowrap">{session.user?.name || "User"}</span>
                     </button>
                     {dropdownOpen && (
                         <div className="absolute left-0 mt-1 min-w-28 bg-white rounded shadow-lg z-50">
