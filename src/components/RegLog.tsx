@@ -4,6 +4,7 @@
 import { useState, useEffect } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import AvatarCircle from "./AvartarCircle";
+import UserProfileModal from "./UserProfileModal";
 
 
 export default function RegLogModal() {
@@ -22,6 +23,7 @@ export default function RegLogModal() {
     const [message, setMessage] = useState<{ text: string; type: "success" | "error" | null }>({ text: "", type: null });
     const [loading, setLoading] = useState(false);
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+    const [userProfileOpen, setUserProfileOpen] = useState(false);
 
     useEffect(() => {
         if (!session?.user?.id) return;
@@ -55,42 +57,6 @@ export default function RegLogModal() {
         return () => clearInterval(timer);
         }
     }, [otpCooldown]);
-
-    // Helper function to get user avatar / notfound -> default
-    // const getAvatarPic = async (userId: string, thumb: boolean = false): Promise<string | null> => {
-    //     try {
-    //         const res = await fetch(`/api/user/${userId}`, { method: "GET" });
-    //         if (!res.ok) throw new Error("Failed to fetch user");
-
-    //         const user = await res.json();
-
-    //         // If avatar is missing or empty string, return null
-    //         if (!user?.avatar || user.avatar.trim() === "") {
-    //             if (thumb) return "/avatar_default-tn.jpg";
-    //             return "/avatar_default.jpg";
-    //         }
-
-    //         let avatarUrl = user.avatar;
-
-    //         if (thumb) {
-    //             // Insert "-tn" before the file extension for thumbnail pic
-    //             const lastDotIndex = avatarUrl.lastIndexOf(".");
-    //             if (lastDotIndex !== -1) {
-    //                 avatarUrl =
-    //                     avatarUrl.slice(0, lastDotIndex) +
-    //                     "-tn" + avatarUrl.slice(lastDotIndex);
-    //             } else {
-    //                 // No extension found, just append -tn
-    //                 avatarUrl += "-tn";
-    //             }
-    //         }
-
-    //         return avatarUrl;
-    //     } catch (err) {
-    //         console.error("Error fetching avatar:", err);
-    //         return null;
-    //     }
-    // };
 
     // Generate random 7-digit OTP
     const generateOtp = () => Math.floor(1000000 + Math.random() * 9000000).toString();
@@ -202,13 +168,19 @@ export default function RegLogModal() {
                     {dropdownOpen && (
                         <div className="absolute left-0 mt-1 min-w-28 bg-white rounded shadow-lg z-50">
                             <button
-                                onClick={()=>{}}
+                                onClick={()=> {
+                                    setDropdownOpen(false)
+                                    setUserProfileOpen(true)
+                                }}
                                 className="w-full text-left px-4 py-2 bg-sky-50 hover:bg-sky-100"
                             >
                                 My Profile
                             </button>
                             <button
-                                onClick={handleLogout}
+                                onClick={() => {
+                                    setDropdownOpen(false)
+                                    handleLogout()
+                                }}
                                 className="w-full text-left px-4 py-2 bg-red-50 hover:bg-red-100/80"
                             >
                                 Logout
@@ -358,6 +330,9 @@ export default function RegLogModal() {
                     </p>
                 </div>
             </div>
+            {userProfileOpen && (
+                <UserProfileModal userId={session?.user.id} onClose={() => setUserProfileOpen(false)} />
+            )}
         </>
     );
 }

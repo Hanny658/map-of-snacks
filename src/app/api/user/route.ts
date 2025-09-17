@@ -33,6 +33,7 @@ export async function POST(req: Request) {
 
         // Hash password
         const hashedPassword = await hash(password, 12);
+        const doSetDefaultBio = !bio || bio == '';
 
         // Create user
         const user = await prisma.user.create({
@@ -40,9 +41,9 @@ export async function POST(req: Request) {
                 name, 
                 email, 
                 password: hashedPassword, 
-                ...(avatar && {avatar}),
-                ...(bio && {bio}),
-                ...(status && {status}),
+                ...(avatar && {avatar}), 
+                ...(doSetDefaultBio ? {bio: "Hi, I'm ready to discover more'n'more interesting & affordable snacks!"} : {bio}), 
+                ...(status && {status}), 
             },
         });
 
