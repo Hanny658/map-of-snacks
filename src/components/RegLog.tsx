@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import AvatarCircle from "./AvartarCircle";
 import UserProfileModal from "./UserProfileModal";
+import RoleSelector from "./RoleSelector";
 
 
 export default function RegLogModal() {
@@ -24,6 +25,8 @@ export default function RegLogModal() {
     const [loading, setLoading] = useState(false);
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
     const [userProfileOpen, setUserProfileOpen] = useState(false);
+    const [role, setRole] = useState<"visitor" | "contributor">("visitor");
+    const [agreed, setAgreed] = useState(false);
 
     useEffect(() => {
         if (!session?.user?.id) return;
@@ -104,6 +107,11 @@ export default function RegLogModal() {
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault();
         setMessage({ text: "", type: null });
+        // Checkbox for agreement must be checked.
+        if (!agreed) {
+            setMessage({ text: "Please read and agree to the rules before registering.", type: "error" });
+            return;
+        }
         // Check OTP matching
         if (mode === "register") {
             // Check OTP presence
@@ -131,6 +139,7 @@ export default function RegLogModal() {
             email,
             password,
             ...(mode === "register" && { username }),
+            ...(mode === "register" && role === "contributor" && { status: "contributor" }),
         });
         if (res?.error) {
             setMessage({ text: res.error, type: "error" });
@@ -297,6 +306,14 @@ export default function RegLogModal() {
                                     </button>
                                 </div>
                             </div>
+                        )}
+                        {mode === "register" && (
+                            <RoleSelector
+                            role={role}
+                            onRoleChange={setRole}
+                            agreed={agreed}
+                            onAgreeChange={setAgreed}
+                            />
                         )}
                         
                         {message.text && (

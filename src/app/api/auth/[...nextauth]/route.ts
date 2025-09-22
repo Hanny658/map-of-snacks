@@ -4,6 +4,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import { compare, hash } from "bcryptjs";
 
+type UserStatus = "pending" | "active" | "contributor" | "banned";
+
 const authOptions: AuthOptions = {
     session: {
         strategy: "jwt",
@@ -15,14 +17,15 @@ const authOptions: AuthOptions = {
         CredentialsProvider({
             name: "Credentials",
             credentials: {
-                mode: { label: "Mode", type: "text" },       // "login" or "register"
+                mode: { label: "Mode", type: "text" },              // "login" or "register"
                 email: { label: "Email", type: "email" },
                 password: { label: "Password", type: "password" },
-                username: { label: "Username", type: "text" },// register only
+                username: { label: "Username", type: "text" },      // register only
+                status: { label: "Status", type: "text" },          // register only
             },
             async authorize(credentials) {
                 if (!credentials) return null;
-                const { mode, email, password, username } = credentials;
+                const { mode, email, password, username, status } = credentials;
 
                 // Register
                 if (mode === "register") {
@@ -37,7 +40,7 @@ const authOptions: AuthOptions = {
                     const hashed = await hash(password, 12);
                     // create with PRISMA
                     const user = await prisma.user.create({
-                        data: { email, password: hashed, name: username },
+                        data: { email, password: hashed, name: username, status: status as UserStatus},
                     });
                     return { id: user.id, email: user.email, name: user.name };
                 }
