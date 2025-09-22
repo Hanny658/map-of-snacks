@@ -9,6 +9,7 @@ import PlaceDetailPanel from 'src/components/PlaceDetailPanel'
 import AddCheapieModal from 'src/components/AddCheapieModal'
 import RegLogModal from 'src/components/RegLog'
 import MapMenu from 'src/components/MapMenu'
+import { useSession } from "next-auth/react"
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || ''
 
@@ -101,6 +102,8 @@ function MapContainer({
   } | null>(null)
   const rightClickTimer = useRef<number | null>(null)
   const didTilt = useRef(false)
+
+  const { data: session } = useSession()
 
   // Initialize map only once
   useEffect(() => {
@@ -436,7 +439,7 @@ function MapContainer({
 
   return <>
     {/* The right click Menu */}
-    {menuPos &&
+    {(menuPos && session?.user.role == 'contributor') &&
       <MapMenu
         lng={menuPos.lng}
         lat={menuPos.lat}
