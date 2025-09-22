@@ -2,7 +2,6 @@
 // components/detail-modal.tsx
 'use client'
 
-import Image from 'next/image'
 import React, { useState, useEffect } from 'react'
 import { CMSConfig } from 'src/cmsConfig'
 
@@ -164,7 +163,8 @@ export default function DetailModal({
                                     <div key={key} className="flex flex-col">
                                         <span className="font-medium">{field.label ?? key}:</span>
                                         {field.type === 'image-url' && val ? (
-                                            <Image
+                                            // eslint-disable-next-line @next/next/no-img-element
+                                            <img
                                                 width={200}
                                                 height={200}
                                                 src={String(val)}
@@ -271,12 +271,13 @@ export default function DetailModal({
 
                                             {formData[key] && (
                                                 <div className="mb-2">
-                                                    <Image
+                                                    {/* eslint-disable-next-line @next/next/no-img-element*/ }
+                                                    <img
                                                         width={200}
                                                         height={200}
                                                         src={String(formData[key])}
                                                         alt="Seems like the picture is out for a trip..."
-                                                        className="max-h-40 rounded"
+                                                        className="max-h-48 rounded aspect-auto"
                                                     />
                                                 </div>
                                             )}

@@ -1,5 +1,4 @@
 // components/AvatarCircle.tsx, for displaying circular avatar picture
-import Image from "next/image";
 import React from "react";
 
 type AvatarProps = {
@@ -15,7 +14,8 @@ const AvatarCircle: React.FC<AvatarProps> = ({ imgLink, size = 32, thumb = true 
             style={{ width: size, height: size }}
         >
             {imgLink ? (
-                <Image
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
                     src={imgLink}
                     alt="avatar"
                     className="rounded-full object-cover"
@@ -23,7 +23,8 @@ const AvatarCircle: React.FC<AvatarProps> = ({ imgLink, size = 32, thumb = true 
                     height={size * 0.88}
                 />
             ) : ( // Additional guard for no image
-                <Image
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
                     src={thumb ? "/avatar_default-tn.jpg" : "/avatar_default.jpg"}
                     alt="avatar"
                     className="rounded-full object-cover"
