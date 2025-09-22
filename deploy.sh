@@ -46,6 +46,9 @@ else
   echo "[INFO] No package.json; skip Node steps."
 fi
 
+# Build with Next Builder
+npm run build
+
 # PM2 reload this process
 if command -v pm2 >/dev/null 2>&1; then
   if pm2 describe "$PM2_APP" >/dev/null 2>&1; then
