@@ -51,6 +51,9 @@ const authOptions: AuthOptions = {
                     if (!user) {
                         throw new Error("Hey! You are not registed yet!");
                     }
+                    if (user.status === 'banned') {
+                        throw new Error("This account has been banned for a reason. For any questions, please email us at zyh@ik.me.");
+                    }
                     const isValid = await compare(password, user.password);
                     if (!isValid) {
                         throw new Error("Come'on! You can remember your password!");
