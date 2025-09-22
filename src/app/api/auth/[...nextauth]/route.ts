@@ -42,7 +42,7 @@ const authOptions: AuthOptions = {
                     const user = await prisma.user.create({
                         data: { email, password: hashed, name: username, status: status as UserStatus},
                     });
-                    return { id: user.id, email: user.email, name: user.name };
+                    return { id: user.id, email: user.email, name: user.name, role: user.status };
                 }
 
                 // Login
@@ -58,7 +58,7 @@ const authOptions: AuthOptions = {
                     if (!isValid) {
                         throw new Error("Come'on! You can remember your password!");
                     }
-                    return { id: user.id, email: user.email, name: user.name };
+                    return { id: user.id, email: user.email, name: user.name, role: user.status };
                 }
 
                 return null;
@@ -71,15 +71,17 @@ const authOptions: AuthOptions = {
             if (user) {
                 token.id = user.id;
                 token.name = user.name;
+                token.role = user.role;
             }
             // Always sync from DB when session is refreshed
             const dbUser = await prisma.user.findUnique({
                 where: { id: token.id as string },
-                select: { name: true, email: true },
+                select: { name: true, email: true, status: true },
             });
             if (dbUser) {
                 token.name = dbUser.name;
                 token.email = dbUser.email;
+                token.role = dbUser.status;
             }
             return token;
         },
@@ -90,13 +92,14 @@ const authOptions: AuthOptions = {
                     ...session.user!,
                     id: token.id as string,
                     name: token.name as string,
+                    role: token.role as string,
                 };
             }
             return session;
         },
     },
     pages: {
-        // future custom route goes here, e.g. signIn: "/auth/custom-signin"
+        // TODO: future custom route goes here, e.g. signIn: "/auth/custom-signin"
     },
 };
 

@@ -10,6 +10,7 @@ declare module "next-auth" {
             /** Other custom fields goes here */
             id: string;
             name: string;
+            role: string | null;
         } & DefaultSession["user"];
     }
 
@@ -19,6 +20,7 @@ declare module "next-auth" {
     interface User extends DefaultUser {
         id: string;
         name: string;
+        role: string | null;
     }
 
     /**
@@ -27,5 +29,6 @@ declare module "next-auth" {
     interface JWT extends DefaultJWT {
         id: string;
         name: string;
+        role: string | null;
     }
 }
