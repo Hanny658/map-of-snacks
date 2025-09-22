@@ -34,7 +34,11 @@ export default function DetailModal({
     useEffect(() => {
         const initial: Record<string, any> = {}
         fields.forEach((field) => {
-            initial[field.name] = entry[field.name] ?? ''
+            if (field.name === "password") {
+                initial[field.name] = ""
+            } else {
+                initial[field.name] = entry[field.name] ?? ""
+            }
         })
         setFormData(initial)
     }, [entry, fields])
@@ -88,19 +92,6 @@ export default function DetailModal({
     // submit update
     const handleUpdate = async () => {
         setIsSubmitting(true)
-        // check nessesary fiels (escape img-url)
-        const missing = fields.some(
-            f =>
-                !f.isReadOnly &&
-                !f.isOptional &&
-                f.type !== 'image-url' &&
-                (formData[f.name] === '' || formData[f.name] == null)
-        )
-        if (missing) {
-            setIsSubmitting(false)
-            alert('请填写所有必填字段')
-            return
-        }
 
         try {
             const pk = fields[0].name
@@ -110,12 +101,24 @@ export default function DetailModal({
                     ? `/api/${model.toLowerCase()}/${idOrKey}`
                     : `/api/${model.toLowerCase()}/${encodeURIComponent(idOrKey)}`
 
-            // Update payload, which ignores key
             const payload: Record<string, any> = {}
+
             fields.forEach((field) => {
-                if (field.name === pk) return
-                payload[field.name] = formData[field.name]
+                if (field.name === pk) return // never update PK
+                // skip password if left blank
+                if (field.name === "password" && !formData[field.name]) return
+                // include only if changed
+                if (formData[field.name] !== entry[field.name]) {
+                    payload[field.name] = formData[field.name]
+                }
             })
+
+            if (Object.keys(payload).length === 0) {
+                alert("No changes detected.")
+                setIsSubmitting(false)
+                setIsEditing(false)
+                return
+            }
 
             const res = await fetch(endpoint, {
                 method: 'PUT',
@@ -127,9 +130,11 @@ export default function DetailModal({
                 setIsEditing(false)
                 onUpdated(updated)
             } else {
-                alert('Failed to update...')
+                alert("Failed to update...")
             }
-        } finally { setIsSubmitting(false) }
+        } finally {
+            setIsSubmitting(false)
+        }
     }
 
     return (
@@ -332,6 +337,7 @@ export default function DetailModal({
                                             }
                                             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
                                             value={formData[key] ?? ''}
+                                            placeholder='Leave Unchanged...'
                                             onChange={(e) =>
                                                 handleInputChange(
                                                     key,
