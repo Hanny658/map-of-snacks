@@ -205,8 +205,8 @@ export default function RegLogModal() {
                     }`}
             >
                 <div
-                    className={`bg-white text-black w-full max-w-md mx-2 p-6 rounded-lg shadow-lg transform transition-transform duration-300 ease-in-out ${isOpen ? "scale-100 opacity-100" : "scale-95 opacity-0"
-                        } relative`}
+                    className={`bg-white text-black w-full max-w-md mx-2 p-6 rounded-lg shadow-lg transform transition-transform duration-300 ease-in-out 
+                        ${isOpen ? "scale-100 opacity-100" : "scale-95 opacity-0"} relative max-h-[90vh] overflow-y-auto`}
                 >
                     {/* Close Icon */}
                     <button
