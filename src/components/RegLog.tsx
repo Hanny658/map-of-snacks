@@ -107,13 +107,13 @@ export default function RegLogModal() {
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault();
         setMessage({ text: "", type: null });
-        // Checkbox for agreement must be checked.
-        if (!agreed) {
-            setMessage({ text: "Please read and agree to the rules before registering.", type: "error" });
-            return;
-        }
-        // Check OTP matching
+
         if (mode === "register") {
+            // Checkbox for agreement must be checked.
+            if (!agreed) {
+                setMessage({ text: "Please read and agree to the rules before registering.", type: "error" });
+                return;
+            }
             // Check OTP presence
             if (!otp) {
                 setMessage({ text: "Please verify your email with an OTP before registering.", type: "error" });

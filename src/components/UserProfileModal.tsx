@@ -205,6 +205,7 @@ export default function UserProfileModal({
                         <div className="flex w-full">
                             <textarea
                                 value={draft}
+                                maxLength={512}
                                 onChange={(e) => setDraft(e.target.value)}
                                 className="border rounded px-2 py-1 w-full mr-2"
                             />
