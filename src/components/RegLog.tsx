@@ -18,7 +18,7 @@ export default function RegLogModal() {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [showPwd, setShowPwd] = useState(false);
     const [userOtp, setUserOtp] = useState("");
-    const [otp, setOtp] = useState<string | null>(null);
+    const [otp, setOtp] = useState<{ otp: string | null; email: string | null }>({otp: null, email: null});
     const [otpExpiry, setOtpExpiry] = useState<number | null>(null);
     const [otpCooldown, setOtpCooldown] = useState(0);
     const [message, setMessage] = useState<{ text: string; type: "success" | "error" | null }>({ text: "", type: null });
@@ -72,7 +72,7 @@ export default function RegLogModal() {
         }
 
         const newOtp = generateOtp();
-        setOtp(newOtp);
+        setOtp({otp: newOtp, email: email});        // bind OTP with sent email
         setOtpExpiry(Date.now() + 7 * 60 * 1000);
         setLoading(true);
         setMessage({ text: "", type: null });
@@ -115,8 +115,14 @@ export default function RegLogModal() {
                 return;
             }
             // Check OTP presence
-            if (!otp) {
+            if (!otp.otp) {
                 setMessage({ text: "Please verify your email with an OTP before registering.", type: "error" });
+                return;
+            }
+
+            // Check email modified after otp sent
+            if (email !== otp.email) {
+                setMessage({ text: "Please re-verify for the modified email address entered.", type: "error" });
                 return;
             }
 
@@ -127,7 +133,7 @@ export default function RegLogModal() {
             }
 
             // Check user input
-            if (userOtp !== otp) {
+            if (userOtp !== otp.otp) {
                 setMessage({ text: "Invalid OTP. Please try again.", type: "error" });
                 return;
             }
